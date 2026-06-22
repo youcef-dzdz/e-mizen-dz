@@ -90,6 +90,11 @@ Aucun — projet non commencé.
 
 ---
 
+## Dette Technique Connue (à traiter dans la phase indiquée)
+- **[Phase 0.3 — Auth] src/lib/supabase/server.ts** : actuellement basé sur @supabase/supabase-js (suffisant pour le scaffolding, pas pour les sessions). À réécrire avec @supabase/ssr (gestion cookies) AU MOMENT de construire le flux auth — pas avant, car non testable sans login. Le prompt Phase 0.3 doit installer @supabase/ssr et remplacer ce client.
+
+---
+
 ## Future Building — Backlog
 | # | Feature | Effort | Dépendances | Priorité |
 |---|---|---|---|---|
