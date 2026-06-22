@@ -45,7 +45,19 @@
 *[Vide — à remplir en Phase 0]*
 
 ## Pages (src/app/[locale]/)
-*[Vide — à remplir au fur et à mesure]*
+### RootLayout (Session 001)
+| Champ | Valeur |
+|---|---|
+| Composant | src/app/layout.tsx → ligne 13 |
+| Fonction principale | RootLayout() |
+| Explication | Coquille HTML racine (lang="fr"), importe globals.css. i18n/[locale] + RTL en Phase 0 ultérieure. |
+
+### Home (placeholder) (Session 001)
+| Champ | Valeur |
+|---|---|
+| Composant | src/app/page.tsx → ligne 5 |
+| Fonction principale | Home() |
+| Explication | Landing placeholder Phase 0.1 — valide le scaffolding + les tokens Tailwind (bg/text espresso, or, success). Aucune couleur hardcodée (Règle 8). |
 
 ## API Routes (src/app/api/)
 *[Vide — à remplir au fur et à mesure]*
@@ -53,5 +65,26 @@
 ## Services (src/services/)
 *[Vide — à remplir au fur et à mesure]*
 
+## Infrastructure (src/lib/)
+### logger (Session 001)
+| Champ | Valeur |
+|---|---|
+| Fichier | src/lib/logger.ts → ligne 30 (export logger) |
+| Fonction principale | logger.info/warn/error() |
+| Explication | Logger central (Règle 13). En prod le détail reste serveur ; l'utilisateur ne voit qu'un message générique (Règle 1). Stub — transport à brancher ultérieurement. |
+
+### supabaseBrowser (Session 001)
+| Champ | Valeur |
+|---|---|
+| Fichier | src/lib/supabase/client.ts → ligne 18 |
+| Explication | Client Supabase navigateur, clé anon uniquement. RLS protège les données. Jamais service_role ici (Règle 11). |
+
+### createSupabaseServerClient (Session 001)
+| Champ | Valeur |
+|---|---|
+| Fichier | src/lib/supabase/server.ts → ligne 26 |
+| Fonction principale | createSupabaseServerClient() |
+| Explication | Client Supabase serveur, clé service_role (bypass RLS). Garde-fou anti-bundle navigateur (Règle 11, P0). Sans session persistée. |
+
 ---
-*Dernière mise à jour: Session 000 — template initial.*
+*Dernière mise à jour: Session 001 — Phase 0.1 scaffolding (layout, landing, lib supabase, logger).*

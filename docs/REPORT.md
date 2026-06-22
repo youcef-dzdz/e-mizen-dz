@@ -55,4 +55,48 @@ Template vide créé.
 
 ---
 
+## Session de Build — 2026-06-22T00:00:00 (Session 001 — Phase 0.1)
+
+### Résumé
+Scaffolding Next.js 14 + TS + Tailwind (tokens uidesign.md) + clients Supabase + logger.
+Build ✅ 0 erreur · dev ✅ HTTP 200 · git init + premier commit poussé sur origin/main.
+Prochaine session: Phase 0.2 — Supabase (projet, pgvector, migrations 001/002/025).
+
+### Fichiers Créés / Modifiés
+- package.json — manifeste, stack verrouillé uniquement (next 14, react 18, @supabase/supabase-js, tailwind, eslint, ts)
+- next.config.mjs — config Next 14 (.mjs car Next 14 ne lit pas .ts ; .ts = Next 15+) — écart au nom listé approuvé par le fondateur
+- tsconfig.json — strict, alias @/* → src/*
+- tailwind.config.ts — mapping COMPLET des tokens uidesign.md §3/§11 (espresso/or/creme/beige/blanc/ink, gris chauds, sémantiques success/warning/error/info, radius, ombres, fonts)
+- postcss.config.js — pipeline Tailwind
+- .eslintrc.json — next/core-web-vitals
+- src/app/layout.tsx — RootLayout (coquille HTML, lang fr)
+- src/app/page.tsx — landing placeholder (tokens uniquement, 0 hardcode)
+- src/app/globals.css — directives @tailwind + base body bg-creme/text-ink
+- src/lib/supabase/client.ts — client navigateur (anon)
+- src/lib/supabase/server.ts — client serveur (service_role, garde-fou anti-client, Règle 11)
+- src/lib/logger.ts — logger central (Règle 13)
+- structure §7 — dossiers src/{components/*, services, hooks, utils, types, app/[locale]/*, app/api/*}, supabase/functions/expire-demandes, public/fonts (avec .gitkeep)
+- docs/CODEMAP.md, docs/STATUS.md — mis à jour (fin de session)
+
+### Décisions Prises
+- Scaffolding manuel (pas create-next-app) — dossier non-vide, protection des docs/CLAUDE.md/.gitignore existants
+- next.config.mjs au lieu de .ts — contradiction stack(Next 14)/nom listé levée par question → approuvé
+- @supabase/supabase-js suffit pour des clients typés sans logique auth ; @supabase/ssr reporté à la phase auth
+- Pas de `npm audit fix --force` — éviterait de bumper hors stack verrouillé
+
+### État Build  ✅ 0 erreur (Next.js 14.2.35, route / prerendue statique)
+
+### RLS  Politiques créées: Aucune · Tests négatifs: Aucun (pas de table créée — Phase 0.2)
+
+### CODEMAP.md  Entrées ajoutées: RootLayout, Home, logger, supabaseBrowser, createSupabaseServerClient
+
+### Sécurité (gate secret)
+- `.env.local` absent de git status · `git check-ignore .env.local` = ignoré · jamais stagé · jamais traqué
+- `git ls-files | grep env` → `.env.example` UNIQUEMENT
+- Premier commit poussé : origin/main (https://github.com/youcef-dzdz/e-mizen-dz)
+
+### Confiance  ✅ Élevée — build vert, dev 200, secret-safety vérifié à 4 points.
+
+---
+
 [Sessions suivantes ajoutées ici]
