@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Fond de page par défaut = crème (uidesign.md §12). Texte = ink (jamais #000). */
+@layer base {
+  body {
+    @apply bg-creme text-ink font-sans antialiased;
+  }
+}

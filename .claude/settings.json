@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(**)",
+      "Write(src/**)",
+      "Write(messages/**)",
+      "Write(docs/**)",
+      "Write(tests/**)",
+      "Write(public/**)",
+      "Bash(npm run build)",
+      "Bash(npm run lint)",
+      "Bash(npm run type-check)"
+    ],
+    "deny": [
+      "Bash(git *)",
+      "Bash(supabase *)",
+      "Bash(curl *)",
+      "Bash(rm *)",
+      "Bash(npm install *)",
+      "Bash(npx *)",
+      "Write(.env*)",
+      "Write(CLAUDE.md)",
+      "Write(FIX.md)",
+      "Write(uidesign.md)",
+      "Write(.claude/**)",
+      "Write(supabase/migrations/**)",
+      "Write(supabase/policies/**)"
+    ]
+  }
+}
