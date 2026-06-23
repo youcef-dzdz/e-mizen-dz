@@ -6,16 +6,16 @@
 ---
 
 ## Dernière Session
-Date: 2026-06-23 (Session 003)
-Ce qui a été fait: Phase 0.2 (seed wilayas, DATA ONLY) — création supabase/seed.sql avec 69 INSERT wilaya (id, code, nom_fr, nom_ar, latitude, longitude ; actif/created_at = défauts). 1-58 numérotation officielle 2019, 59-69 loi 26-06 (ids/noms verrouillés). Coordonnées incertaines marquées `⚠️ VERIF` (tout 49-69 + wilayas mineures). Seed PAS exécuté. Spécialités PAS seedées (tâche séparée).
-Prochaine tâche: vérification fondateur des coordonnées flaggées ⚠️ VERIF → seed des spécialités (tâche séparée) → exécution des migrations + seed sur Supabase → Phase 0.3 auth.
-Résumé point (reprise): seed.sql columns = (id, code, nom_fr, nom_ar, latitude, longitude) — match exact migration 001. code = matricule 2 chiffres ('01'..'69'). Coords = chef-lieu, degrés décimaux. 14 grandes villes non flaggées (Alger/Oran/Constantine/Annaba/Sétif/Blida/Béjaïa/Tlemcen/Tizi Ouzou/Batna/Biskra/Skikda/Mostaganem/Ouargla) ; toutes les autres flaggées pour spot-check.
+Date: 2026-06-24 (Session 004)
+Ce qui a été fait: Phase 0.2 ✅ complète — migrations 001–003 + wilaya seed exécutés sur Supabase (ref `rwasjhplhbobrwqerzks`), vérifiés (wilaya=69, 59–69=11). Deux dettes logguées : seed specialites manquant (bloque avocat_specialites Phase 1) et coords wilayas 49–69 (21 lignes ⚠️ VERIF) à vérifier avant Phase 2 Haversine.
+Prochaine tâche: activer pgvector → Phase 0.3 Auth.
+Résumé point (reprise): seed.sql columns = (id, code, nom_fr, nom_ar, latitude, longitude) — match exact migration 001. code = matricule 2 chiffres ('01'..'69'). Coords = chef-lieu, degrés décimaux. 14 grandes villes non flaggées ; coords 49–69 restent à spot-checker (dette Phase 2).
 
 ---
 
 ## Phase Courante
-**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~30% (0.1 scaffolding + 0.2 structure migrations + seed wilayas)
-Prochaine tâche immédiate: vérifier coords ⚠️ VERIF → seed spécialités (séparé) → exécuter 001/002/003 + seed sur Supabase (+ activer pgvector) → Phase 0.3 auth
+**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~40% (0.1 scaffolding + 0.2 ✅ complète)
+**Phase 0.2 ✅ complète:** migrations 001–003 + wilaya seed exécutés sur Supabase le 2026-06-24, vérifiés (wilaya=69, 59–69=11). Prochaine: pgvector + Phase 0.3 Auth.
 Numérotation migrations (ordre dépendance FK, verrouillé): 001 wilaya · 002 specialites · 003 users. (Ancien "001 users / 002 wilaya / 025 specialites" corrigé Session 002 — users.wilaya_id réfère wilaya.)
 > Wilaya count corrigé 58→69 le 2026-06-23 (loi n° 26-06 du 04/04/2026 — 11 nouvelles wilayas n°59-69, ex-wilayas déléguées). Période transitoire jusqu'au 31/12/2026.
 
@@ -24,7 +24,7 @@ Numérotation migrations (ordre dépendance FK, verrouillé): 001 wilaya · 002 
 ## État des Phases
 | Phase | Nom | Statut |
 |---|---|---|
-| 0 | Foundation & Setup | 🔵 En cours (0.1 fait · 0.2 structure migrations fondation) |
+| 0 | Foundation & Setup | 🔵 En cours (0.1 fait · 0.2 ✅ migrations 001–003 + seed wilayas exécutés/vérifiés 2026-06-24) |
 | 1 | Avocat Profile & Cabinet | ⏳ À commencer |
 | 2 | Marketplace Public | ⏳ À commencer |
 | 3 | ERP Cabinet | ⏳ À commencer |
@@ -37,7 +37,7 @@ Numérotation migrations (ordre dépendance FK, verrouillé): 001 wilaya · 002 
 
 ## Checklist Environnement
 À vérifier en début de session si environnement non confirmé:
-- [ ] Supabase project accessible — [URL dashboard à remplir]
+- [x] Supabase project accessible — ref `rwasjhplhbobrwqerzks` (migrations 001–003 + seed exécutés 2026-06-24)
 - [ ] Vercel deployment actif — [URL à remplir]
 - [ ] Variables .env.local présentes et complètes
 - [x] `npm run dev` démarre sans erreur (HTTP 200, landing rendu — Session 001)
@@ -45,7 +45,7 @@ Numérotation migrations (ordre dépendance FK, verrouillé): 001 wilaya · 002 
 - [ ] Supabase Auth fonctionne (test login)
 - [ ] pgvector activée (Phase 6+ uniquement)
 
-Statut actuel: 🔵 Scaffolding OK (build 0 erreur, dev 200) — Supabase pas encore créé (Phase 0.2)
+Statut actuel: 🔵 Scaffolding OK (build 0 erreur, dev 200) — Supabase project créé (ref `rwasjhplhbobrwqerzks`), migrations 001–003 + seed exécutés 2026-06-24
 
 ---
 
@@ -94,6 +94,8 @@ Aucun — projet non commencé.
 ---
 
 ## Dette Technique Connue (à traiter dans la phase indiquée)
+- [ ] **[AVANT Phase 1] Seed specialites** — table créée (002) mais 0 lignes. Avocat_specialites (Phase 1) en dépend. Liste des spécialités juridiques à définir.
+- [ ] **[AVANT Phase 2 — Haversine] Vérifier coordonnées chef-lieu wilayas 49–69** (21 lignes ⚠️ VERIF dans seed.sql) contre Google Maps. Seedées non vérifiées le 2026-06-24.
 - **[Phase 0.3 — Auth] src/lib/supabase/server.ts** : actuellement basé sur @supabase/supabase-js (suffisant pour le scaffolding, pas pour les sessions). À réécrire avec @supabase/ssr (gestion cookies) AU MOMENT de construire le flux auth — pas avant, car non testable sans login. Le prompt Phase 0.3 doit installer @supabase/ssr et remplacer ce client.
 - **[Phase 0.2 / Phase 1 — users & cabinets] RBAC-ready :** le design des tables users / cabinets doit rester compatible RBAC dès maintenant (cabinet_id déjà présent par entité — Rule 16). Le système RBAC de Phase 3 (membership multi-collaborateurs + rôles secrétaire/collaborateur) doit pouvoir s'ajouter de façon **additive** (nouvelles tables membership/permissions), sans réécrire la fondation users/cabinets. Ne pas verrouiller un schéma users mono-utilisateur qui forcerait une migration de fondation plus tard.
 - **[Phase 0.3 — Auth] Création du profil users = service_role serveur uniquement.** La table users n'a AUCUNE policy INSERT côté client (volontaire — empêche un signup malveillant de choisir role='admin'). Donc le flux signup DOIT créer la ligne public.users via une route serveur (service_role), jamais côté client, et DOIT forcer role='citoyen' pour les inscriptions publiques. Si oublié en Phase 0.3 → le signup échoue silencieusement.
@@ -117,7 +119,7 @@ Aucun — projet non commencé.
 ---
 
 ## Renommage et Historique
-Nom produit: E-Mizen DZ (définitif). Ancien projet de référence: LegalBot DZ — **base de code différente, zéro héritage**. Repository: https://github.com/youcef-dzdz/e-mizen-dz (créé Session 001). Vercel / Supabase: à créer.
+Nom produit: E-Mizen DZ (définitif). Ancien projet de référence: LegalBot DZ — **base de code différente, zéro héritage**. Repository: https://github.com/youcef-dzdz/e-mizen-dz (créé Session 001). Supabase: créé (ref `rwasjhplhbobrwqerzks`, migrations + seed exécutés 2026-06-24). Vercel: à créer.
 
 ---
 
@@ -155,5 +157,11 @@ Fait: seed.sql avec 69 INSERT (id, code, nom_fr, nom_ar, lat, long ; actif/creat
 Décisions: columns = exactement celles de migration 001 · code = matricule 2 chiffres · 14 grandes villes non flaggées, reste flaggé pour spot-check honnête (pas de faux-confiant).
 Build: N/A (SQL data) · Seed: ⏳ PAS exécuté · Spécialités: ⏳ tâche séparée
 Prochaine session: vérif coords flaggées → seed spécialités → exécution migrations+seed → Phase 0.3 auth
+
+### Session 004 — Phase 0.2 Exécution migrations + seed
+Date: 2026-06-24 · Phase: 0 (Foundation) · Tâche: exécuter migrations 001–003 + wilaya seed sur Supabase, vérifier
+Fait: migrations 001–003 + seed wilayas exécutés sur Supabase (ref `rwasjhplhbobrwqerzks`), vérifiés (wilaya=69, 59–69=11). Phase 0.2 ✅ complète.
+Dette logguée: (1) seed specialites manquant — bloque avocat_specialites Phase 1 ; (2) coords wilayas 49–69 (21 lignes ⚠️ VERIF) à vérifier avant Phase 2 Haversine.
+Prochaine session: activer pgvector → Phase 0.3 Auth
 
 [Sessions suivantes ajoutées ici par l'agent]
