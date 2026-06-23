@@ -54,6 +54,7 @@ Statut actuel: 🔵 Scaffolding OK (build 0 erreur, dev 200) — Supabase pas en
 **Auth methods:** Email+Password, Google OAuth, Magic Link · Avocat = email uniquement.
 **Tables:** 27 — voir docs/PHASES.md pour l'ordre de migration.
 **Compétiteur:** avocatalgerien.com (annuaire WordPress, pas de vérification/ERP/IA) — avantage intact.
+**RBAC cabinet — in-scope Phase 3 (2026-06-23):** le RBAC multi-collaborateurs (rôles secrétaire + collaborateur, membership par cabinet, permissions par rôle) est désormais une feature approuvée, requise par l'encadreur. Build + démo live attendus en Phase 3. N'est plus une feature hors scope.
 
 ---
 
@@ -92,6 +93,7 @@ Aucun — projet non commencé.
 
 ## Dette Technique Connue (à traiter dans la phase indiquée)
 - **[Phase 0.3 — Auth] src/lib/supabase/server.ts** : actuellement basé sur @supabase/supabase-js (suffisant pour le scaffolding, pas pour les sessions). À réécrire avec @supabase/ssr (gestion cookies) AU MOMENT de construire le flux auth — pas avant, car non testable sans login. Le prompt Phase 0.3 doit installer @supabase/ssr et remplacer ce client.
+- **[Phase 0.2 / Phase 1 — users & cabinets] RBAC-ready :** le design des tables users / cabinets doit rester compatible RBAC dès maintenant (cabinet_id déjà présent par entité — Rule 16). Le système RBAC de Phase 3 (membership multi-collaborateurs + rôles secrétaire/collaborateur) doit pouvoir s'ajouter de façon **additive** (nouvelles tables membership/permissions), sans réécrire la fondation users/cabinets. Ne pas verrouiller un schéma users mono-utilisateur qui forcerait une migration de fondation plus tard.
 
 ---
 
@@ -101,12 +103,13 @@ Aucun — projet non commencé.
 | 1 | Graphify MCP | Faible | Phase 2+ | Moyenne |
 | 2 | Impersonation admin | Moyen | Phase 5 | Faible |
 | 3 | Notifications WebSockets | Élevé | Phase 4 | Haute |
-| 4 | Cabinet Pro / RBAC | Très élevé | Phase 3 | Haute |
-| 5 | Facturation Stripe | Très élevé | Cabinet Pro | Moyenne |
-| 6 | OCR documents | Moyen | Phase 3 | Moyenne |
-| 7 | Notaires / Huissiers | Très élevé | Phase 2 | Haute |
-| 8 | Application mobile | Très élevé | MVP complet | Haute |
-| 9 | Migration FastAPI + LangGraph | Très élevé | MVP complet | Faible |
+| 4 | Facturation Stripe | Très élevé | RBAC cabinet (Phase 3) | Moyenne |
+| 5 | OCR documents | Moyen | Phase 3 | Moyenne |
+| 6 | Notaires / Huissiers | Très élevé | Phase 2 | Haute |
+| 7 | Application mobile | Très élevé | MVP complet | Haute |
+| 8 | Migration FastAPI + LangGraph | Très élevé | MVP complet | Faible |
+
+> Cabinet Pro / RBAC multi-collaborateurs retiré du backlog le 2026-06-23 — désormais in-scope Phase 3 (requis encadreur). Voir § Décisions Verrouillées.
 
 ---
 

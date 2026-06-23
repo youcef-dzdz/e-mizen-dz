@@ -60,7 +60,7 @@
 
 L'agent ne peut PAS construire les éléments suivants sans approbation explicite du fondateur:
 
-❌ Cabinet Pro / RBAC multi-collaborateurs
+✅ **RBAC cabinet / Cabinet Pro multi-collaborateurs — APPROUVÉ le 2026-06-23 (requis encadreur, à construire et démontrer en Phase 3).** N'est plus hors scope : rôles secrétaire + collaborateur, membership par cabinet, permissions par rôle, RLS + tests négatifs par rôle. Schéma conçu en Phase 3 (voir docs/PHASES.md).
 ❌ Facturation / paiements / abonnements Stripe
 ❌ Messagerie temps réel (WebSockets)
 ❌ Application mobile

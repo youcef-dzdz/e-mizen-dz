@@ -39,6 +39,7 @@
 **Objectif:** l'avocat gère clients, dossiers, tâches, documents, calendrier. **Dépend de:** Phase 2. *(plus grande phase)*
 **Tables:** clients, dossiers, dossier_etapes, taches, notes_internes, tags_dossier, paiements, documents, document_versions, evenements_calendrier, activity_log.
 - Migrations + RLS + tests négatifs (toutes ces tables)
+- **RBAC cabinet (requis encadreur, approuvé 2026-06-23):** membres du cabinet (rôles secrétaire + collaborateur), appartenance par cabinet (membership), vérification des permissions par rôle, politiques RLS isolant ce que chaque rôle peut voir/faire, tests négatifs par rôle (chaque rôle bloqué hors de son périmètre). Schéma détaillé conçu en Phase 3, pas avant.
 - Demandes entrantes: accepter → crée client + dossier; rejeter + motif; email citoyen
 - Clients: liste, fiche, historique dossiers (pagination offset)
 - Dossiers: créer, workflow 5 étapes visuel, historique transitions (dossier_etapes), tags, notes internes, pagination cursor, soft delete + corbeille
@@ -95,7 +96,9 @@
 ## MVP Boundary — Non Négociable
 Ces features n'existent PAS dans les phases ci-dessus. Toute implémentation nécessite approbation fondateur. Backlog: docs/STATUS.md § Future Building.
 
-❌ Cabinet Pro / RBAC multi-collaborateurs · ❌ Facturation / Stripe · ❌ Messagerie temps réel (WebSockets) · ❌ Application mobile · ❌ OCR documents · ❌ Vidéo-consultation · ❌ Notaires/Huissiers backend (UI Coming Soon uniquement) · ❌ Migration FastAPI/LangGraph · ❌ Microservices
+❌ Facturation / Stripe · ❌ Messagerie temps réel (WebSockets) · ❌ Application mobile · ❌ OCR documents · ❌ Vidéo-consultation · ❌ Notaires/Huissiers backend (UI Coming Soon uniquement) · ❌ Migration FastAPI/LangGraph · ❌ Microservices
+
+> ℹ️ **RBAC cabinet (multi-collaborateurs)** était ici — désormais **approuvé et in-scope Phase 3** (requis encadreur, 2026-06-23). Voir Phase 3 ci-dessus.
 
 **Décision testing:** pas de tests automatisés feature pour le MVP — QA manuelle + tests négatifs RLS uniquement. Tests automatisés complets = post-graduation.
 
