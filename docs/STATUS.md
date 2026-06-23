@@ -96,6 +96,7 @@ Aucun — projet non commencé.
 ## Dette Technique Connue (à traiter dans la phase indiquée)
 - **[Phase 0.3 — Auth] src/lib/supabase/server.ts** : actuellement basé sur @supabase/supabase-js (suffisant pour le scaffolding, pas pour les sessions). À réécrire avec @supabase/ssr (gestion cookies) AU MOMENT de construire le flux auth — pas avant, car non testable sans login. Le prompt Phase 0.3 doit installer @supabase/ssr et remplacer ce client.
 - **[Phase 0.2 / Phase 1 — users & cabinets] RBAC-ready :** le design des tables users / cabinets doit rester compatible RBAC dès maintenant (cabinet_id déjà présent par entité — Rule 16). Le système RBAC de Phase 3 (membership multi-collaborateurs + rôles secrétaire/collaborateur) doit pouvoir s'ajouter de façon **additive** (nouvelles tables membership/permissions), sans réécrire la fondation users/cabinets. Ne pas verrouiller un schéma users mono-utilisateur qui forcerait une migration de fondation plus tard.
+- **[Phase 0.3 — Auth] Création du profil users = service_role serveur uniquement.** La table users n'a AUCUNE policy INSERT côté client (volontaire — empêche un signup malveillant de choisir role='admin'). Donc le flux signup DOIT créer la ligne public.users via une route serveur (service_role), jamais côté client, et DOIT forcer role='citoyen' pour les inscriptions publiques. Si oublié en Phase 0.3 → le signup échoue silencieusement.
 
 ---
 
