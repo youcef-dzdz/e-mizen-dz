@@ -6,16 +6,16 @@
 ---
 
 ## Dernière Session
-Date: 2026-06-23 (Session 002)
-Ce qui a été fait: Phase 0.2 (partie 1) — migrations fondation STRUCTURE SEULE en ordre de dépendance FK : 001 wilaya, 002 specialites, 003 users (ENUMs user_role/user_locale, trigger updated_at, FK wilaya_id, soft delete). RLS activée + policies sur les 3 tables. Tests négatifs RLS écrits (tests/rls/*.test.sql). AUCUN seed, migrations PAS encore exécutées (revue d'abord).
-Prochaine tâche: revue fondateur du SQL → puis tâche de seed SÉPARÉE (69 wilayas + spécialités) → puis exécution des migrations sur Supabase → Phase 0.3 auth.
-Résumé point (reprise): renumérotation dépendance-FK appliquée (wilaya/specialites avant users). Pas de test runner JS → tests RLS en .test.sql (set role anon/authenticated + ROLLBACK, zéro seed persisté). specialites.slug UNIQUE = index, pas de doublon. users : pas de policy INSERT/DELETE client (signup via service_role ; soft delete only).
+Date: 2026-06-23 (Session 003)
+Ce qui a été fait: Phase 0.2 (seed wilayas, DATA ONLY) — création supabase/seed.sql avec 69 INSERT wilaya (id, code, nom_fr, nom_ar, latitude, longitude ; actif/created_at = défauts). 1-58 numérotation officielle 2019, 59-69 loi 26-06 (ids/noms verrouillés). Coordonnées incertaines marquées `⚠️ VERIF` (tout 49-69 + wilayas mineures). Seed PAS exécuté. Spécialités PAS seedées (tâche séparée).
+Prochaine tâche: vérification fondateur des coordonnées flaggées ⚠️ VERIF → seed des spécialités (tâche séparée) → exécution des migrations + seed sur Supabase → Phase 0.3 auth.
+Résumé point (reprise): seed.sql columns = (id, code, nom_fr, nom_ar, latitude, longitude) — match exact migration 001. code = matricule 2 chiffres ('01'..'69'). Coords = chef-lieu, degrés décimaux. 14 grandes villes non flaggées (Alger/Oran/Constantine/Annaba/Sétif/Blida/Béjaïa/Tlemcen/Tizi Ouzou/Batna/Biskra/Skikda/Mostaganem/Ouargla) ; toutes les autres flaggées pour spot-check.
 
 ---
 
 ## Phase Courante
-**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~25% (0.1 scaffolding + 0.2 structure migrations fondation)
-Prochaine tâche immédiate: revue SQL → tâche de seed SÉPARÉE (69 wilayas + spécialités) → exécuter 001/002/003 sur Supabase (+ activer pgvector) → Phase 0.3 auth
+**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~30% (0.1 scaffolding + 0.2 structure migrations + seed wilayas)
+Prochaine tâche immédiate: vérifier coords ⚠️ VERIF → seed spécialités (séparé) → exécuter 001/002/003 + seed sur Supabase (+ activer pgvector) → Phase 0.3 auth
 Numérotation migrations (ordre dépendance FK, verrouillé): 001 wilaya · 002 specialites · 003 users. (Ancien "001 users / 002 wilaya / 025 specialites" corrigé Session 002 — users.wilaya_id réfère wilaya.)
 > Wilaya count corrigé 58→69 le 2026-06-23 (loi n° 26-06 du 04/04/2026 — 11 nouvelles wilayas n°59-69, ex-wilayas déléguées). Période transitoire jusqu'au 31/12/2026.
 
@@ -148,5 +148,12 @@ Fait: 3 migrations (ENUMs user_role/user_locale, FK wilaya_id, trigger updated_a
 Décisions: renumérotation ordre dépendance FK (wilaya/specialites avant users) · tests en .test.sql (pas de runner JS, package.json hors scope) · slug UNIQUE = index · users sans INSERT/DELETE client
 Build: N/A (SQL only, pas de build Next) · Migrations: ⏳ PAS exécutées (revue d'abord) · Seed: ⏳ tâche séparée (aucun seed dans cette tâche)
 Prochaine session: revue SQL → seed (69 wilayas + spécialités) → exécution migrations → Phase 0.3 auth
+
+### Session 003 — Phase 0.2 Seed Wilayas
+Date: 2026-06-23 · Phase: 0 (Foundation) · Tâche: supabase/seed.sql — 69 wilayas (DATA ONLY)
+Fait: seed.sql avec 69 INSERT (id, code, nom_fr, nom_ar, lat, long ; actif/created_at = défauts). 1-58 officiel 2019 + 59-69 loi 26-06 (verrouillés). Coords chef-lieu ; incertaines marquées ⚠️ VERIF (tout 49-69 + mineures, 55 lignes flaggées).
+Décisions: columns = exactement celles de migration 001 · code = matricule 2 chiffres · 14 grandes villes non flaggées, reste flaggé pour spot-check honnête (pas de faux-confiant).
+Build: N/A (SQL data) · Seed: ⏳ PAS exécuté · Spécialités: ⏳ tâche séparée
+Prochaine session: vérif coords flaggées → seed spécialités → exécution migrations+seed → Phase 0.3 auth
 
 [Sessions suivantes ajoutées ici par l'agent]

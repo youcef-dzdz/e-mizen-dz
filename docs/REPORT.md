@@ -134,4 +134,33 @@ Prochaine session : revue SQL → tâche de seed séparée (69 wilayas + spécia
 
 ---
 
+## Session de Build — 2026-06-23T00:00:00 (Session 003 — Phase 0.2 seed wilayas)
+
+### Résumé
+Création de supabase/seed.sql : 69 INSERT pour la table wilaya (DATA ONLY).
+Build : N/A (SQL de données). Seed NON exécuté. Spécialités NON seedées (tâche séparée).
+Prochaine session : vérification des coordonnées flaggées ⚠️ VERIF → seed spécialités → exécution migrations + seed → Phase 0.3 auth.
+
+### Fichiers Créés / Modifiés
+- supabase/seed.sql — 69 lignes wilaya (id, code, nom_fr, nom_ar, latitude, longitude). 1-58 numérotation officielle 2019 (dont 49-58 sahariennes), 59-69 loi n° 26-06 du 04/04/2026 (ids/noms verrouillés). actif/created_at non fournis (défauts table). Coordonnées chef-lieu en degrés décimaux ; incertaines marquées `-- ⚠️ VERIF`.
+- docs/CODEMAP.md — section « Base de données — Seed » (entrée seed wilaya) + date màj
+- docs/STATUS.md — Dernière Session, Phase Courante, Journal (Session 003)
+- docs/REPORT.md — cette entrée
+
+### Décisions Prises
+- Colonnes du seed = exactement celles lues dans migration 001_wilaya.sql (id, code, nom_fr, nom_ar, latitude, longitude). `actif` et `created_at` laissés aux défauts (instruction).
+- `code` = matricule à 2 chiffres ('01'..'09' pour les wilayas 1-9, '10'..'69' ensuite).
+- Flag honnête : 14 grandes villes laissées non flaggées (coordonnées solides) ; toutes les autres + l'intégralité de 49-69 marquées ⚠️ VERIF — un approximatif signalé vaut mieux qu'un faux-confiant (instruction).
+- Échappement SQL : apostrophes doublées (M''Sila, El M''Ghair).
+
+### État Build  N/A — seed SQL de données, exécution différée.
+
+### RLS  Politiques créées: Aucune (data only) · Tests négatifs: Aucun (aucune nouvelle politique)
+
+### CODEMAP.md  Entrées ajoutées: seed wilaya (section Base de données — Seed)
+
+### Confiance  ⚠️ Moyenne — structure/colonnes/échappement conformes et sûrs ; les coordonnées flaggées ⚠️ VERIF nécessitent une vérification manuelle (Google Maps) avant prod, par conception.
+
+---
+
 [Sessions suivantes ajoutées ici]

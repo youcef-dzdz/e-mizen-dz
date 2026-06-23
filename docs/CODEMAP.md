@@ -98,6 +98,16 @@
 | Test négatif | tests/rls/users.test.sql (A voit/modifie son profil ; A↛B SELECT/UPDATE bloqués ; hard DELETE bloqué) |
 | Explication | Profil lié à auth.users, RBAC-ready (role 3 valeurs fixes). Isolation absolue des profils. Soft delete uniquement. Structure seule. |
 
+## Base de données — Seed (supabase/seed.sql)
+### seed wilaya (Session 003 — Phase 0.2)
+| Champ | Valeur |
+|---|---|
+| Fichier | supabase/seed.sql |
+| Table(s) | wilaya — id, code, nom_fr, nom_ar, latitude, longitude (actif/created_at = défauts) |
+| Contenu | 69 lignes : 1-58 numérotation officielle 2019 + 59-69 loi n° 26-06 (04/04/2026) |
+| Ordre d'exécution | APRÈS migrations 001/002/003 |
+| Explication | Données de référence des 69 wilayas (chef-lieu lat/long en degrés décimaux). Coordonnées incertaines marquées `⚠️ VERIF` (tout 49-69 + wilayas mineures) — à vérifier avant prod. Pas encore exécuté. |
+
 ## Infrastructure (src/lib/)
 ### logger (Session 001)
 | Champ | Valeur |
@@ -120,4 +130,4 @@
 | Explication | Client Supabase serveur, clé service_role (bypass RLS). Garde-fou anti-bundle navigateur (Règle 11, P0). Sans session persistée. |
 
 ---
-*Dernière mise à jour: Session 002 — Phase 0.2 migrations fondation (wilaya, specialites, users) + tests négatifs RLS.*
+*Dernière mise à jour: Session 003 — Phase 0.2 seed wilayas (69 lignes, coords flaggées ⚠️ VERIF).*
