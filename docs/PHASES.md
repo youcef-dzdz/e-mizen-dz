@@ -9,7 +9,7 @@
 **Objectif:** projet fonctionnel, auth opérationnelle, base initialisée. **Statut:** ⏳ À commencer.
 **Tables:** users, wilaya, specialites.
 - Setup: repo GitHub, Next.js 14 + TS, Tailwind + tokens uidesign.md, tous les fichiers projet, .gitignore
-- Supabase: créer projet, activer pgvector, migrations 001-002-025 (users, wilaya+seed 58, specialites+seed)
+- Supabase: créer projet, activer pgvector, migrations 001-002-025 (users, wilaya+seed 69, specialites+seed)
 - Auth: Email+Password, Google OAuth, Magic Link, confirmation email obligatoire
 - Auth flow: login, signup, callback OAuth, middleware, useAuth.ts, redirection par rôle
 - i18n: next-intl, i18n.ts, fr/ar/en.json, RTLProvider, LanguageSwitcher

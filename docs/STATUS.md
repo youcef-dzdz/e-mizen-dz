@@ -15,7 +15,8 @@ Résumé point (reprise): scaffolding fait et poussé ; next.config en .mjs (Nex
 
 ## Phase Courante
 **Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~15% (0.1 scaffolding fait)
-Prochaine tâche immédiate: Phase 0.2 → créer projet Supabase + activer pgvector → migrations 001 (users), 002 (wilaya + seed 58), 025 (specialites)
+Prochaine tâche immédiate: Phase 0.2 → créer projet Supabase + activer pgvector → migrations 001 (users), 002 (wilaya + seed 69), 025 (specialites)
+> Wilaya count corrigé 58→69 le 2026-06-23 (loi n° 26-06 du 04/04/2026 — 11 nouvelles wilayas n°59-69, ex-wilayas déléguées). Période transitoire jusqu'au 31/12/2026.
 
 ---
 

@@ -41,7 +41,7 @@ Espace Client (portail intégré au même compte)
 ## Modules
 
 ### 🔍 Marketplace Public
-Recherche avocat par wilaya (formule Haversine — 58 wilayas), spécialité, expérience, disponibilité. Profils vérifiés avec badge. Accès public permanent — jamais de login forcé sur la découverte.
+Recherche avocat par wilaya (formule Haversine — 69 wilayas), spécialité, expérience, disponibilité. Profils vérifiés avec badge. Accès public permanent — jamais de login forcé sur la découverte.
 
 ### 🏢 ERP Cabinet
 Espace de travail avocat: clients, dossiers avec workflow 5 étapes, tâches, documents versionnés, calendrier (rendez-vous + audiences + échéances), suivi paiements, notes internes, corbeille avec restauration.
