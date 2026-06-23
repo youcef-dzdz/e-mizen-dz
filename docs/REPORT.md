@@ -99,4 +99,39 @@ Prochaine session: Phase 0.2 — Supabase (projet, pgvector, migrations 001/002/
 
 ---
 
+## Session de Build — 2026-06-23T00:00:00 (Session 002 — Phase 0.2 migrations fondation)
+
+### Résumé
+Migrations fondation STRUCTURE SEULE en ordre de dépendance FK : 001 wilaya, 002 specialites, 003 users + RLS + tests négatifs.
+Build : N/A (SQL pur, pas de compilation Next). Migrations NON exécutées (revue fondateur d'abord). Aucun seed.
+Prochaine session : revue SQL → tâche de seed séparée (69 wilayas + spécialités) → exécution → Phase 0.3 auth.
+
+### Fichiers Créés / Modifiés
+- supabase/migrations/001_wilaya.sql — table référence 69 wilayas (lat/long Haversine, actif), index code, RLS SELECT public, aucune écriture client
+- supabase/migrations/002_specialites.sql — table référence spécialités (slug unique), RLS SELECT public, aucune écriture client
+- supabase/migrations/003_users.sql — ENUMs user_role/user_locale, table users (FK auth.users cascade + FK wilaya_id, soft delete), trigger updated_at, RLS SELECT/UPDATE own, pas de DELETE/INSERT client
+- tests/rls/wilaya.test.sql — négatifs : anon SELECT ok · INSERT/UPDATE/DELETE bloqués
+- tests/rls/specialites.test.sql — négatifs : anon SELECT ok · INSERT/UPDATE/DELETE bloqués
+- tests/rls/users.test.sql — négatifs : A↛B SELECT/UPDATE bloqués · hard DELETE bloqué · témoin positif A voit son profil
+- docs/PHASES.md — note numérotation corrigée (ordre dépendance FK : wilaya 001, specialites 002, users 003)
+- docs/CODEMAP.md — section « Base de données — Migrations » (3 entrées) + date màj
+- docs/STATUS.md — Dernière Session, Phase Courante, État des Phases, Journal (Session 002)
+- docs/REPORT.md — cette entrée
+
+### Décisions Prises
+- Renumérotation ordre dépendance FK (Option A) : wilaya/specialites AVANT users car users.wilaya_id → wilaya.
+- Tests RLS en .test.sql (set local role anon/authenticated + request.jwt.claims, fixtures + ROLLBACK) — aucun test runner JS installé et package.json hors périmètre ; zéro seed persisté.
+- specialites.slug UNIQUE fournit déjà l'index → pas d'index dupliqué.
+- users : aucune policy INSERT/DELETE côté client — création profil au signup via service_role, suppression = soft delete (Rule 10).
+
+### État Build  N/A — migrations SQL uniquement, exécution différée à la revue.
+
+### RLS  Politiques créées: wilaya_select_public · specialites_select_public · users_select_own · users_update_own · (DELETE users = aucune policy = refus, volontaire) · Tests négatifs: wilaya.test.sql, specialites.test.sql, users.test.sql (aucun .skip, aucun commenté)
+
+### CODEMAP.md  Entrées ajoutées: wilaya, specialites, users (section Base de données — Migrations)
+
+### Confiance  ⚠️ Moyenne-haute — SQL conforme aux règles ; non exécuté contre Supabase (revue d'abord, par instruction). Tests RLS supposent l'environnement Supabase (rôles anon/authenticated + grants par défaut).
+
+---
+
 [Sessions suivantes ajoutées ici]

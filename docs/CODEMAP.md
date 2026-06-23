@@ -65,6 +65,39 @@
 ## Services (src/services/)
 *[Vide — à remplir au fur et à mesure]*
 
+## Base de données — Migrations (supabase/migrations/)
+### wilaya (Session 002 — Phase 0.2)
+| Champ | Valeur |
+|---|---|
+| Migration | supabase/migrations/001_wilaya.sql |
+| Table(s) | wilaya — id, code, nom_fr, nom_ar, latitude, longitude, actif, created_at |
+| Index | idx_wilaya_code (code) |
+| Politique RLS | wilaya_select_public (SELECT anon+authenticated) ; aucune écriture client |
+| Test négatif | tests/rls/wilaya.test.sql (SELECT ok · INSERT/UPDATE/DELETE bloqués) |
+| Explication | Référence des 69 wilayas (loi 26-06). Lecture publique pour la découverte marketplace ; lat/long pour Haversine (Phase 2). Structure seule, seed séparé. |
+
+### specialites (Session 002 — Phase 0.2)
+| Champ | Valeur |
+|---|---|
+| Migration | supabase/migrations/002_specialites.sql |
+| Table(s) | specialites — id, slug (unique), nom_fr, nom_ar, actif, created_at |
+| Index | index unique sur slug (via contrainte UNIQUE) |
+| Politique RLS | specialites_select_public (SELECT anon+authenticated) ; aucune écriture client |
+| Test négatif | tests/rls/specialites.test.sql (SELECT ok · INSERT/UPDATE/DELETE bloqués) |
+| Explication | Référence des spécialités juridiques. slug utilisé dans les URLs de recherche. Structure seule, seed séparé. |
+
+### users (Session 002 — Phase 0.2)
+| Champ | Valeur |
+|---|---|
+| Migration | supabase/migrations/003_users.sql |
+| ENUMs | user_role ('citoyen','avocat','admin') · user_locale ('fr','ar','en') |
+| Table(s) | users — id (FK auth.users, cascade), role, email, nom, prenom, telephone, wilaya_id (FK wilaya), locale, avatar_url, created_at, updated_at, deleted_at/by/reason |
+| Index | idx_users_role (role) · idx_users_wilaya_id (wilaya_id) |
+| Trigger | trg_users_updated_at → set_updated_at() (updated_at = now() à chaque UPDATE) |
+| Politique RLS | users_select_own + users_update_own (auth.uid() = id) ; pas de DELETE (soft delete, Rule 10) ; pas d'INSERT client (signup via service_role) |
+| Test négatif | tests/rls/users.test.sql (A voit/modifie son profil ; A↛B SELECT/UPDATE bloqués ; hard DELETE bloqué) |
+| Explication | Profil lié à auth.users, RBAC-ready (role 3 valeurs fixes). Isolation absolue des profils. Soft delete uniquement. Structure seule. |
+
 ## Infrastructure (src/lib/)
 ### logger (Session 001)
 | Champ | Valeur |
@@ -87,4 +120,4 @@
 | Explication | Client Supabase serveur, clé service_role (bypass RLS). Garde-fou anti-bundle navigateur (Règle 11, P0). Sans session persistée. |
 
 ---
-*Dernière mise à jour: Session 001 — Phase 0.1 scaffolding (layout, landing, lib supabase, logger).*
+*Dernière mise à jour: Session 002 — Phase 0.2 migrations fondation (wilaya, specialites, users) + tests négatifs RLS.*
