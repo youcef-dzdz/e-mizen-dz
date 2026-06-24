@@ -6,17 +6,17 @@
 ---
 
 ## Dernière Session
-Date: 2026-06-24 (Session 005)
-Ce qui a été fait: Phase 0.3 Auth Foundation (en cours) — pgvector activé (vector 0.8.0) ; @supabase/ssr + next-intl v4 installés ; src/lib/supabase/server-session.ts ajouté (client SSR cookie/session, clé anon, respecte RLS) ; squelette i18n complet (routing.ts + request.ts + plugin next-intl wrappé dans next.config.mjs + stubs fr/ar/en namespace common + restructure src/app/[locale] avec dir RTL et NextIntlClientProvider). Build vert, l'app sert /fr /ar /en.
-Prochaine tâche: middleware fusionné (next-intl v4 + refresh de session Supabase dans UN SEUL middleware.ts, dans le bon ordre) — pas encore commencé.
-Résumé point (reprise): server.ts (service_role) INCHANGÉ par design ; le client de session est un fichier NOUVEAU server-session.ts (anon, cookies, RLS). Le squelette i18n charge les messages par locale via getRequestConfig v4 ; les fichiers messages/*.json ne contiennent encore que le namespace common (stubs). Layout locale possède `<html lang dir>` + provider ; root layout = thin pass-through.
+Date: 2026-06-24 (Session 006)
+Ce qui a été fait: Middleware fusionné créé (src/middleware.ts) — next-intl v4 routing + refresh session Supabase dans un seul fichier, ordre correct. Build vert, routing locale + détection navigateur + RTL vérifiés en runtime (Chrome→/en, Opera→/fr, /ar en RTL).
+Prochaine tâche: Phase 0.3 — pages auth (login / signup / callback OAuth) OU finir le reste de 0.3 selon découpage
+Résumé point (reprise): middleware fait et commité (668f24c). Session refresh code en place mais non testable tant qu'il n'y a pas de login — vérif reportée à Phase 1.
 
 ---
 
 ## Phase Courante
-**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~55% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation en cours)
+**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~70% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation en cours — middleware fusionné fait)
 **Phase 0.2 ✅ complète:** migrations 001–003 + wilaya seed exécutés sur Supabase le 2026-06-24, vérifiés (wilaya=69, 59–69=11).
-**Phase 0.3 — Auth Foundation 🔵 en cours (Session 005):** pgvector activé (vector 0.8.0) · @supabase/ssr + next-intl v4 installés · src/lib/supabase/server-session.ts ajouté (client SSR cookie/session, anon, respecte RLS — server.ts service_role INCHANGÉ) · squelette i18n complet (routing.ts + request.ts + plugin next.config.mjs + stubs fr/ar/en common + restructure app/[locale] avec dir RTL + NextIntlClientProvider). Build vert, app sert /fr /ar /en. Prochaine: middleware fusionné next-intl + session Supabase.
+**Phase 0.3 — Auth Foundation 🔵 en cours (Session 006):** pgvector activé (vector 0.8.0) · @supabase/ssr + next-intl v4 installés · src/lib/supabase/server-session.ts ajouté (client SSR cookie/session, anon, respecte RLS — server.ts service_role INCHANGÉ) · squelette i18n complet (routing.ts + request.ts + plugin next.config.mjs + stubs fr/ar/en common + restructure app/[locale] avec dir RTL + NextIntlClientProvider) · **middleware fusionné src/middleware.ts (next-intl v4 + refresh session Supabase, un seul fichier, ordre correct) — build vert, runtime vérifié (Chrome→/en, Opera→/fr, /ar RTL)**. Prochaine immédiate: pages auth (login/signup/callback OAuth) + reste des items 0.3.
 Numérotation migrations (ordre dépendance FK, verrouillé): 001 wilaya · 002 specialites · 003 users. (Ancien "001 users / 002 wilaya / 025 specialites" corrigé Session 002 — users.wilaya_id réfère wilaya.)
 > Wilaya count corrigé 58→69 le 2026-06-23 (loi n° 26-06 du 04/04/2026 — 11 nouvelles wilayas n°59-69, ex-wilayas déléguées). Période transitoire jusqu'au 31/12/2026.
 
@@ -172,5 +172,11 @@ Fait: pgvector activé (vector 0.8.0) · @supabase/ssr + next-intl v4 installés
 Décisions: server.ts NON réécrit (session = fichier séparé server-session.ts) · messages = stubs common (dette i18n logguée) · root layout thin, [locale]/layout possède `<html lang dir>` + provider
 Build: ✅ 0 erreur · app sert /fr /ar /en
 Prochaine session: middleware fusionné (next-intl v4 + refresh session Supabase dans un seul middleware.ts, bon ordre)
+
+### Session 006 — Middleware fusionné
+Date: 2026-06-24 · Phase: 0.3 Auth Foundation
+Fait: src/middleware.ts — next-intl v4 + refresh session Supabase, un seul fichier, ordre correct · build 0 erreur · runtime vérifié (détection navigateur Chrome→/en Opera→/fr, /ar RTL)
+Décisions: détection de langue navigateur gardée ACTIVE (pas de force /fr) — meilleure UX trilingue algérienne · warning Edge Runtime process.version = cosmétique, ignoré
+Build: 0 erreur · Commit: 668f24c · Prochaine session: pages auth (login/signup/callback)
 
 [Sessions suivantes ajoutées ici par l'agent]
