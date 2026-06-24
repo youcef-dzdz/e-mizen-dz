@@ -6,17 +6,17 @@
 ---
 
 ## Dernière Session
-Date: 2026-06-24 (Session 007)
-Ce qui a été fait: Création profil utilisateur via TRIGGER Postgres (approche entreprise atomique) — migration 004_handle_new_user.sql : fonction handle_new_user (SECURITY DEFINER, search_path figé, role='citoyen' forcé) + trigger AFTER INSERT ON auth.users. Exécuté en Dashboard, testé : création user → ligne public.users auto-créée avec role=citoyen vérifiée. Formulaire signup UI + validation client faits (présentationnel).
-Prochaine tâche: brancher SignupForm sur auth.ts signUp() UNIQUEMENT (le trigger gère le profil — PAS d'appel à create-profile)
-Résumé point (reprise): trigger 004 actif et vérifié. Formulaire signup affiché et validé visuellement (FR/AR RTL OK). Reste : câbler signUp() au bouton + messages succès/erreur traduits.
+Date: 2026-06-24 (Session 007 suite)
+Ce qui a été fait: Formulaire signup CÂBLÉ sur signUp() et vérifié de bout en bout. Flux complet testé en réel : page signup → signUp() → auth.users → trigger 004 → public.users (role=citoyen) → email de confirmation reçu → compte confirmé. UX : panneau succès clair, bloc erreur traduit, trigger gère le profil (create-profile PAS appelé).
+Prochaine tâche: masquer la réception du retour de confirmation — construire la route /auth/callback (le lien de confirmation revient actuellement sur /fr#access_token sans handler dédié)
+Résumé point (reprise): signup loop 100% fonctionnel et vérifié. Compte test confirmé en base (youcef.mokhtari). Reste pour finir Phase 0.3 : route callback (confirmation/OAuth) + page login.
 
 ---
 
 ## Phase Courante
-**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~90% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation quasi finie — trigger profil + formulaire signup faits)
+**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~95% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation ~95% — signup loop câblé & vérifié de bout en bout ; reste route /auth/callback puis page login)
 **Phase 0.2 ✅ complète:** migrations 001–003 + wilaya seed exécutés sur Supabase le 2026-06-24, vérifiés (wilaya=69, 59–69=11).
-**Phase 0.3 — Auth Foundation 🔵 en cours (Session 007):** pgvector activé (vector 0.8.0) · @supabase/ssr + next-intl v4 installés · src/lib/supabase/server-session.ts ajouté (client SSR cookie/session, anon, respecte RLS — server.ts service_role INCHANGÉ) · squelette i18n complet (routing.ts + request.ts + plugin next.config.mjs + stubs fr/ar/en common + restructure app/[locale] avec dir RTL + NextIntlClientProvider) · middleware fusionné src/middleware.ts (next-intl v4 + refresh session Supabase, un seul fichier, ordre correct) · **migration 004_handle_new_user.sql (trigger AFTER INSERT auth.users → profil public.users auto-créé, role=citoyen forcé) exécutée + testée · formulaire signup UI + validation client (tokens uidesign, FR/AR RTL vérifiés)**. Prochaine immédiate: câbler SignupForm sur auth.ts signUp() (le trigger gère le profil — PAS d'appel à create-profile).
+**Phase 0.3 — Auth Foundation 🔵 en cours (Session 007):** pgvector activé (vector 0.8.0) · @supabase/ssr + next-intl v4 installés · src/lib/supabase/server-session.ts ajouté (client SSR cookie/session, anon, respecte RLS — server.ts service_role INCHANGÉ) · squelette i18n complet (routing.ts + request.ts + plugin next.config.mjs + stubs fr/ar/en common + restructure app/[locale] avec dir RTL + NextIntlClientProvider) · middleware fusionné src/middleware.ts (next-intl v4 + refresh session Supabase, un seul fichier, ordre correct) · **migration 004_handle_new_user.sql (trigger AFTER INSERT auth.users → profil public.users auto-créé, role=citoyen forcé) exécutée + testée · formulaire signup UI + validation client (tokens uidesign, FR/AR RTL vérifiés)**. Prochaine immédiate: câbler SignupForm sur auth.ts signUp() (le trigger gère le profil — PAS d'appel à create-profile). **Mise à jour (Session 007 suite): SignupForm câblé sur signUp() et flux signup vérifié de bout en bout en réel (page → auth.users → trigger 004 → public.users role=citoyen → email confirmé). Prochaine immédiate: route /auth/callback (handler confirmation/OAuth) puis page login.**
 Numérotation migrations (ordre dépendance FK, verrouillé): 001 wilaya · 002 specialites · 003 users. (Ancien "001 users / 002 wilaya / 025 specialites" corrigé Session 002 — users.wilaya_id réfère wilaya.)
 > Wilaya count corrigé 58→69 le 2026-06-23 (loi n° 26-06 du 04/04/2026 — 11 nouvelles wilayas n°59-69, ex-wilayas déléguées). Période transitoire jusqu'au 31/12/2026.
 
@@ -105,6 +105,8 @@ Aucun — projet non commencé.
 - [ ] **[Phase error-hardening] Route create-profile — code erreur :** retourne 500 générique sur toute erreur d'insert ; « ligne déjà existante » devrait être un 409. À affiner dans la passe error-hardening.
 - [ ] **[Quand logger.ts existe] Route create-profile — logging :** échec d'insert non journalisé (TODO logger.ts dans le code). À brancher quand logger.ts existe.
 - [ ] **[Phase 0.3 / Phase 1 — Auth] Signup — orphelins :** un auth.users peut exister sans ligne public.users si le client ferme l'onglet entre auth.signUp() et l'appel à create-profile. À détecter au premier login + réparer. Faible criticité MVP.
+- [ ] **[Phase 0.3 — Auth] Détection "email déjà utilisé" non vérifiée :** SignupForm mappe error.status===422 / regex vers errors.emailTaken, MAIS Supabase masque par défaut les emails déjà inscrits (fake success, anti-énumération T08) — ce code peut ne jamais se déclencher. À tester explicitement et ajuster si besoin.
+- [ ] **[Phase 0.3 — Auth] Pas de libellé "chargement" signup :** bouton réutilise le label submit pendant isLoading (désactivé). Ajouter clé i18n auth.signup.submitting (3 locales) pour un retour visuel clair pendant l'appel réseau.
 
 ---
 
@@ -188,5 +190,11 @@ Date: 2026-06-24 · Phase: 0.3 Auth Foundation
 Fait: migration 004 trigger handle_new_user (SECURITY DEFINER, role citoyen forcé, AFTER INSERT auth.users) testé OK · formulaire signup UI + validation client (tokens uidesign, FR/AR RTL vérifiés)
 Décisions: création profil = TRIGGER atomique (choix entreprise, pas frontend multi-étapes) · create-profile devient fallback idempotent futur · langue de travail session = arabe (pédagogie)
 Build: 0 erreur · Prochaine session: câbler signUp() au formulaire
+
+### Session 007 (suite) — Signup loop câblé & vérifié
+Date: 2026-06-24 · Phase: 0.3 Auth Foundation
+Fait: SignupForm câblé sur signUp() · flux signup complet testé en réel (page→auth.users→trigger→users role=citoyen→email confirmé) · UX succès/erreur traduite
+Décisions: trigger gère le profil (create-profile non appelé) · compte test youcef.mokhtari gardé pour tester login
+Build: 0 erreur · Prochaine session: route /auth/callback puis page login
 
 [Sessions suivantes ajoutées ici par l'agent]
