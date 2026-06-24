@@ -6,16 +6,17 @@
 ---
 
 ## Dernière Session
-Date: 2026-06-24 (Session 004)
-Ce qui a été fait: Phase 0.2 ✅ complète — migrations 001–003 + wilaya seed exécutés sur Supabase (ref `rwasjhplhbobrwqerzks`), vérifiés (wilaya=69, 59–69=11). Deux dettes logguées : seed specialites manquant (bloque avocat_specialites Phase 1) et coords wilayas 49–69 (21 lignes ⚠️ VERIF) à vérifier avant Phase 2 Haversine.
-Prochaine tâche: activer pgvector → Phase 0.3 Auth.
-Résumé point (reprise): seed.sql columns = (id, code, nom_fr, nom_ar, latitude, longitude) — match exact migration 001. code = matricule 2 chiffres ('01'..'69'). Coords = chef-lieu, degrés décimaux. 14 grandes villes non flaggées ; coords 49–69 restent à spot-checker (dette Phase 2).
+Date: 2026-06-24 (Session 005)
+Ce qui a été fait: Phase 0.3 Auth Foundation (en cours) — pgvector activé (vector 0.8.0) ; @supabase/ssr + next-intl v4 installés ; src/lib/supabase/server-session.ts ajouté (client SSR cookie/session, clé anon, respecte RLS) ; squelette i18n complet (routing.ts + request.ts + plugin next-intl wrappé dans next.config.mjs + stubs fr/ar/en namespace common + restructure src/app/[locale] avec dir RTL et NextIntlClientProvider). Build vert, l'app sert /fr /ar /en.
+Prochaine tâche: middleware fusionné (next-intl v4 + refresh de session Supabase dans UN SEUL middleware.ts, dans le bon ordre) — pas encore commencé.
+Résumé point (reprise): server.ts (service_role) INCHANGÉ par design ; le client de session est un fichier NOUVEAU server-session.ts (anon, cookies, RLS). Le squelette i18n charge les messages par locale via getRequestConfig v4 ; les fichiers messages/*.json ne contiennent encore que le namespace common (stubs). Layout locale possède `<html lang dir>` + provider ; root layout = thin pass-through.
 
 ---
 
 ## Phase Courante
-**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~40% (0.1 scaffolding + 0.2 ✅ complète)
-**Phase 0.2 ✅ complète:** migrations 001–003 + wilaya seed exécutés sur Supabase le 2026-06-24, vérifiés (wilaya=69, 59–69=11). Prochaine: pgvector + Phase 0.3 Auth.
+**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~55% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation en cours)
+**Phase 0.2 ✅ complète:** migrations 001–003 + wilaya seed exécutés sur Supabase le 2026-06-24, vérifiés (wilaya=69, 59–69=11).
+**Phase 0.3 — Auth Foundation 🔵 en cours (Session 005):** pgvector activé (vector 0.8.0) · @supabase/ssr + next-intl v4 installés · src/lib/supabase/server-session.ts ajouté (client SSR cookie/session, anon, respecte RLS — server.ts service_role INCHANGÉ) · squelette i18n complet (routing.ts + request.ts + plugin next.config.mjs + stubs fr/ar/en common + restructure app/[locale] avec dir RTL + NextIntlClientProvider). Build vert, app sert /fr /ar /en. Prochaine: middleware fusionné next-intl + session Supabase.
 Numérotation migrations (ordre dépendance FK, verrouillé): 001 wilaya · 002 specialites · 003 users. (Ancien "001 users / 002 wilaya / 025 specialites" corrigé Session 002 — users.wilaya_id réfère wilaya.)
 > Wilaya count corrigé 58→69 le 2026-06-23 (loi n° 26-06 du 04/04/2026 — 11 nouvelles wilayas n°59-69, ex-wilayas déléguées). Période transitoire jusqu'au 31/12/2026.
 
@@ -96,7 +97,8 @@ Aucun — projet non commencé.
 ## Dette Technique Connue (à traiter dans la phase indiquée)
 - [ ] **[AVANT Phase 1] Seed specialites** — table créée (002) mais 0 lignes. Avocat_specialites (Phase 1) en dépend. Liste des spécialités juridiques à définir.
 - [ ] **[AVANT Phase 2 — Haversine] Vérifier coordonnées chef-lieu wilayas 49–69** (21 lignes ⚠️ VERIF dans seed.sql) contre Google Maps. Seedées non vérifiées le 2026-06-24.
-- **[Phase 0.3 — Auth] src/lib/supabase/server.ts** : actuellement basé sur @supabase/supabase-js (suffisant pour le scaffolding, pas pour les sessions). À réécrire avec @supabase/ssr (gestion cookies) AU MOMENT de construire le flux auth — pas avant, car non testable sans login. Le prompt Phase 0.3 doit installer @supabase/ssr et remplacer ce client.
+- ✅ **[Phase 0.3 — Auth] Client de session SSR — RÉSOLU (Session 005, formulation antérieure imprécise).** L'ancienne dette disait « réécrire server.ts avec @supabase/ssr » — c'était imprécis. server.ts (clé service_role, bypass RLS) reste INCHANGÉ par design : il n'a jamais eu vocation à porter les sessions. La gestion de session a été ajoutée dans un fichier NOUVEAU `src/lib/supabase/server-session.ts` (@supabase/ssr, clé anon, lecture/écriture cookies, respecte RLS). Les deux clients coexistent : server.ts = privilégié serveur, server-session.ts = session utilisateur.
+- [ ] **[Phase 0.3 — i18n] Fichiers de messages = stubs (namespace `common` uniquement).** messages/fr.json, ar.json, en.json ne contiennent que le namespace `common` (Session 005). Les traductions complètes sont à fournir par composant UI au fur et à mesure des phases ; Rule 4 impose le trio fr/ar/en en lockstep (clé manquante dans un fichier = build bloquant, clé déclarée jamais référencée = à supprimer).
 - **[Phase 0.2 / Phase 1 — users & cabinets] RBAC-ready :** le design des tables users / cabinets doit rester compatible RBAC dès maintenant (cabinet_id déjà présent par entité — Rule 16). Le système RBAC de Phase 3 (membership multi-collaborateurs + rôles secrétaire/collaborateur) doit pouvoir s'ajouter de façon **additive** (nouvelles tables membership/permissions), sans réécrire la fondation users/cabinets. Ne pas verrouiller un schéma users mono-utilisateur qui forcerait une migration de fondation plus tard.
 - **[Phase 0.3 — Auth] Création du profil users = service_role serveur uniquement.** La table users n'a AUCUNE policy INSERT côté client (volontaire — empêche un signup malveillant de choisir role='admin'). Donc le flux signup DOIT créer la ligne public.users via une route serveur (service_role), jamais côté client, et DOIT forcer role='citoyen' pour les inscriptions publiques. Si oublié en Phase 0.3 → le signup échoue silencieusement.
 
@@ -163,5 +165,12 @@ Date: 2026-06-24 · Phase: 0 (Foundation) · Tâche: exécuter migrations 001–
 Fait: migrations 001–003 + seed wilayas exécutés sur Supabase (ref `rwasjhplhbobrwqerzks`), vérifiés (wilaya=69, 59–69=11). Phase 0.2 ✅ complète.
 Dette logguée: (1) seed specialites manquant — bloque avocat_specialites Phase 1 ; (2) coords wilayas 49–69 (21 lignes ⚠️ VERIF) à vérifier avant Phase 2 Haversine.
 Prochaine session: activer pgvector → Phase 0.3 Auth
+
+### Session 005 — Phase 0.3 Auth Foundation (pgvector + session SSR + i18n)
+Date: 2026-06-24 · Phase: 0.3 (Auth Foundation) · Tâche: pgvector + client de session SSR + squelette i18n (étapes a→d)
+Fait: pgvector activé (vector 0.8.0) · @supabase/ssr + next-intl v4 installés · server-session.ts (client SSR cookie/session, anon, RLS ; server.ts service_role inchangé) · squelette i18n (routing.ts + request.ts + plugin next.config.mjs + stubs fr/ar/en common + restructure app/[locale] dir RTL + NextIntlClientProvider)
+Décisions: server.ts NON réécrit (session = fichier séparé server-session.ts) · messages = stubs common (dette i18n logguée) · root layout thin, [locale]/layout possède `<html lang dir>` + provider
+Build: ✅ 0 erreur · app sert /fr /ar /en
+Prochaine session: middleware fusionné (next-intl v4 + refresh session Supabase dans un seul middleware.ts, bon ordre)
 
 [Sessions suivantes ajoutées ici par l'agent]

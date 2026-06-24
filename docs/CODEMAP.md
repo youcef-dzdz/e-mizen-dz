@@ -45,19 +45,26 @@
 *[Vide — à remplir en Phase 0]*
 
 ## Pages (src/app/[locale]/)
-### RootLayout (Session 001)
+### RootLayout (Session 001 · modifié Session 005)
 | Champ | Valeur |
 |---|---|
-| Composant | src/app/layout.tsx → ligne 13 |
+| Composant | src/app/layout.tsx |
 | Fonction principale | RootLayout() |
-| Explication | Coquille HTML racine (lang="fr"), importe globals.css. i18n/[locale] + RTL en Phase 0 ultérieure. |
+| Explication | Root layout devenu thin pass-through (Session 005) : ne possède plus `<html>`/`<body>` — c'est désormais [locale]/layout.tsx qui les porte (lang + dir par locale). Se contente de relayer children. |
 
-### Home (placeholder) (Session 001)
+### LocaleLayout (Session 005 — Phase 0.3)
 | Champ | Valeur |
 |---|---|
-| Composant | src/app/page.tsx → ligne 5 |
+| Composant | src/app/[locale]/layout.tsx |
+| Fonction principale | LocaleLayout() |
+| Explication | Layout par locale : possède `<html lang dir>` (dir=rtl pour ar, ltr sinon), charge les messages et enveloppe l'arbre dans NextIntlClientProvider. Point d'entrée RTL et i18n côté client. |
+
+### Home (placeholder) (Session 001 · déplacée Session 005)
+| Champ | Valeur |
+|---|---|
+| Composant | src/app/[locale]/page.tsx |
 | Fonction principale | Home() |
-| Explication | Landing placeholder Phase 0.1 — valide le scaffolding + les tokens Tailwind (bg/text espresso, or, success). Aucune couleur hardcodée (Règle 8). |
+| Explication | Landing placeholder déplacée de src/app/page.tsx vers src/app/[locale]/page.tsx (routing par locale, Session 005). Valide scaffolding + tokens Tailwind. Aucune couleur hardcodée (Règle 8). |
 
 ## API Routes (src/app/api/)
 *[Vide — à remplir au fur et à mesure]*
@@ -127,7 +134,40 @@
 |---|---|
 | Fichier | src/lib/supabase/server.ts → ligne 26 |
 | Fonction principale | createSupabaseServerClient() |
-| Explication | Client Supabase serveur, clé service_role (bypass RLS). Garde-fou anti-bundle navigateur (Règle 11, P0). Sans session persistée. |
+| Explication | Client Supabase serveur, clé service_role (bypass RLS). Garde-fou anti-bundle navigateur (Règle 11, P0). Sans session persistée. INCHANGÉ en Phase 0.3 (la session vit dans server-session.ts). |
+
+### createServerSessionClient (Session 005 — Phase 0.3)
+| Champ | Valeur |
+|---|---|
+| Fichier | src/lib/supabase/server-session.ts |
+| Fonction principale | createServerSessionClient() |
+| Explication | Client SSR @supabase/ssr, clé anon, lecture/écriture des cookies de session — RESPECTE la RLS (jamais service_role). Fichier NOUVEAU, distinct de server.ts : porte la session utilisateur côté serveur. Base du flux auth Phase 0.3. |
+
+## Internationalisation (src/i18n/ · next.config.mjs · messages/)
+### routing (Session 005 — Phase 0.3)
+| Champ | Valeur |
+|---|---|
+| Fichier | src/i18n/routing.ts |
+| Explication | Config next-intl : locales fr/ar/en, locale par défaut fr. Source de vérité des locales pour le routing [locale]. |
+
+### request config (Session 005 — Phase 0.3)
+| Champ | Valeur |
+|---|---|
+| Fichier | src/i18n/request.ts |
+| Fonction principale | getRequestConfig() (v4) |
+| Explication | getRequestConfig next-intl v4 : charge messages/{locale}.json par requête selon la locale active. |
+
+### plugin next-intl (Session 005 — Phase 0.3)
+| Champ | Valeur |
+|---|---|
+| Fichier | next.config.mjs |
+| Explication | Config Next enveloppée par le plugin next-intl (createNextIntlPlugin) pointant sur src/i18n/request.ts. Toujours .mjs (Next 14 ne lit pas .ts). |
+
+### messages stubs (Session 005 — Phase 0.3)
+| Champ | Valeur |
+|---|---|
+| Fichier | messages/fr.json · messages/ar.json · messages/en.json |
+| Explication | Stubs de traduction — namespace `common` uniquement pour l'instant. Trio fr/ar/en maintenu en lockstep (Rule 4). Traductions complètes à ajouter par composant UI (dette i18n loguée STATUS.md). |
 
 ---
-*Dernière mise à jour: Session 003 — Phase 0.2 seed wilayas (69 lignes, coords flaggées ⚠️ VERIF).*
+*Dernière mise à jour: Session 005 — Phase 0.3 Auth Foundation (server-session.ts SSR + squelette i18n + restructure app/[locale]).*
