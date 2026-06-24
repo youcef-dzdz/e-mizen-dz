@@ -1,0 +1,27 @@
+import { supabaseBrowser } from '@/lib/supabase/client'
+
+// Service d'authentification — moitié CLIENT uniquement (Rule 9 : tout appel
+// Supabase vit dans services/). Clé anon via supabaseBrowser — JAMAIS service_role
+// ici (Rule 11). On NE capture PAS les erreurs : on renvoie le résultat brut de
+// Supabase ({ data, error }) pour que la couche UI décide du message (Rule 1).
+
+// Connexion email + mot de passe.
+// POURQUOI renvoyer le résultat tel quel : la UI branche sur error pour afficher
+// un message générique traduit ; ce service ne fait aucune interprétation métier.
+export async function signIn(email: string, password: string) {
+  return supabaseBrowser.auth.signInWithPassword({ email, password })
+}
+
+// Déconnexion de la session navigateur courante.
+export async function signOut() {
+  return supabaseBrowser.auth.signOut()
+}
+
+// Inscription email + mot de passe.
+// POURQUOI ce commentaire est critique : ceci crée UNIQUEMENT l'entrée auth.users.
+// La ligne dans la table users (role='citoyen' forcé) est créée séparément par une
+// route serveur (service_role) — JAMAIS ici (Rule 11). Confirmation email
+// obligatoire avant premier login (déjà activé côté Supabase).
+export async function signUp(email: string, password: string) {
+  return supabaseBrowser.auth.signUp({ email, password })
+}
