@@ -1,22 +1,11 @@
-import type { Metadata } from "next";
-import "./globals.css";
-
-// Layout racine minimal (Phase 0.1). La gestion i18n/[locale] + RTL arabe
-// arrive plus tard en Phase 0 — ici on pose seulement la coquille HTML.
-export const metadata: Metadata = {
-  title: "E-Mizen DZ",
-  description: "Plateforme LegalTech algérienne — marketplace avocats, ERP cabinet, assistant IA.",
-};
-
+// Layout racine volontairement minimal (Phase 0.3).
+// POURQUOI thin: avec next-intl v4, c'est le layout [locale] qui possède
+// <html lang>/<body> et dir RTL (le lang/dir dépend de la locale, inconnue ici).
+// La racine ne fait que laisser passer les enfants — sinon on aurait deux <html>.
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // lang="fr" par défaut — le switch FR/AR/EN + dir RTL sera géré en Phase 0 i18n.
-  return (
-    <html lang="fr">
-      <body>{children}</body>
-    </html>
-  );
+  return children;
 }
