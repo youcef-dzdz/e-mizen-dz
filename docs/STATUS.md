@@ -6,17 +6,17 @@
 ---
 
 ## Dernière Session
-Date: 2026-06-24 (Session 006)
-Ce qui a été fait: Middleware fusionné créé (src/middleware.ts) — next-intl v4 routing + refresh session Supabase dans un seul fichier, ordre correct. Build vert, routing locale + détection navigateur + RTL vérifiés en runtime (Chrome→/en, Opera→/fr, /ar en RTL).
-Prochaine tâche: Phase 0.3 — pages auth (login / signup / callback OAuth) OU finir le reste de 0.3 selon découpage
-Résumé point (reprise): middleware fait et commité (668f24c). Session refresh code en place mais non testable tant qu'il n'y a pas de login — vérif reportée à Phase 1.
+Date: 2026-06-24 (Session 007)
+Ce qui a été fait: Création profil utilisateur via TRIGGER Postgres (approche entreprise atomique) — migration 004_handle_new_user.sql : fonction handle_new_user (SECURITY DEFINER, search_path figé, role='citoyen' forcé) + trigger AFTER INSERT ON auth.users. Exécuté en Dashboard, testé : création user → ligne public.users auto-créée avec role=citoyen vérifiée. Formulaire signup UI + validation client faits (présentationnel).
+Prochaine tâche: brancher SignupForm sur auth.ts signUp() UNIQUEMENT (le trigger gère le profil — PAS d'appel à create-profile)
+Résumé point (reprise): trigger 004 actif et vérifié. Formulaire signup affiché et validé visuellement (FR/AR RTL OK). Reste : câbler signUp() au bouton + messages succès/erreur traduits.
 
 ---
 
 ## Phase Courante
-**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~70% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation en cours — middleware fusionné fait)
+**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~90% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation quasi finie — trigger profil + formulaire signup faits)
 **Phase 0.2 ✅ complète:** migrations 001–003 + wilaya seed exécutés sur Supabase le 2026-06-24, vérifiés (wilaya=69, 59–69=11).
-**Phase 0.3 — Auth Foundation 🔵 en cours (Session 006):** pgvector activé (vector 0.8.0) · @supabase/ssr + next-intl v4 installés · src/lib/supabase/server-session.ts ajouté (client SSR cookie/session, anon, respecte RLS — server.ts service_role INCHANGÉ) · squelette i18n complet (routing.ts + request.ts + plugin next.config.mjs + stubs fr/ar/en common + restructure app/[locale] avec dir RTL + NextIntlClientProvider) · **middleware fusionné src/middleware.ts (next-intl v4 + refresh session Supabase, un seul fichier, ordre correct) — build vert, runtime vérifié (Chrome→/en, Opera→/fr, /ar RTL)**. Prochaine immédiate: pages auth (login/signup/callback OAuth) + reste des items 0.3.
+**Phase 0.3 — Auth Foundation 🔵 en cours (Session 007):** pgvector activé (vector 0.8.0) · @supabase/ssr + next-intl v4 installés · src/lib/supabase/server-session.ts ajouté (client SSR cookie/session, anon, respecte RLS — server.ts service_role INCHANGÉ) · squelette i18n complet (routing.ts + request.ts + plugin next.config.mjs + stubs fr/ar/en common + restructure app/[locale] avec dir RTL + NextIntlClientProvider) · middleware fusionné src/middleware.ts (next-intl v4 + refresh session Supabase, un seul fichier, ordre correct) · **migration 004_handle_new_user.sql (trigger AFTER INSERT auth.users → profil public.users auto-créé, role=citoyen forcé) exécutée + testée · formulaire signup UI + validation client (tokens uidesign, FR/AR RTL vérifiés)**. Prochaine immédiate: câbler SignupForm sur auth.ts signUp() (le trigger gère le profil — PAS d'appel à create-profile).
 Numérotation migrations (ordre dépendance FK, verrouillé): 001 wilaya · 002 specialites · 003 users. (Ancien "001 users / 002 wilaya / 025 specialites" corrigé Session 002 — users.wilaya_id réfère wilaya.)
 > Wilaya count corrigé 58→69 le 2026-06-23 (loi n° 26-06 du 04/04/2026 — 11 nouvelles wilayas n°59-69, ex-wilayas déléguées). Période transitoire jusqu'au 31/12/2026.
 
@@ -101,7 +101,7 @@ Aucun — projet non commencé.
 - [ ] **[Phase 0.3 — i18n] Fichiers de messages = stubs (namespace `common` uniquement).** messages/fr.json, ar.json, en.json ne contiennent que le namespace `common` (Session 005). Les traductions complètes sont à fournir par composant UI au fur et à mesure des phases ; Rule 4 impose le trio fr/ar/en en lockstep (clé manquante dans un fichier = build bloquant, clé déclarée jamais référencée = à supprimer).
 - **[Phase 0.2 / Phase 1 — users & cabinets] RBAC-ready :** le design des tables users / cabinets doit rester compatible RBAC dès maintenant (cabinet_id déjà présent par entité — Rule 16). Le système RBAC de Phase 3 (membership multi-collaborateurs + rôles secrétaire/collaborateur) doit pouvoir s'ajouter de façon **additive** (nouvelles tables membership/permissions), sans réécrire la fondation users/cabinets. Ne pas verrouiller un schéma users mono-utilisateur qui forcerait une migration de fondation plus tard.
 - **[Phase 0.3 — Auth] Création du profil users = service_role serveur uniquement.** La table users n'a AUCUNE policy INSERT côté client (volontaire — empêche un signup malveillant de choisir role='admin'). Donc le flux signup DOIT créer la ligne public.users via une route serveur (service_role), jamais côté client, et DOIT forcer role='citoyen' pour les inscriptions publiques. Si oublié en Phase 0.3 → le signup échoue silencieusement.
-- [ ] **[AVANT fin Phase 1] Route create-profile — idempotence :** la route /api/auth/create-profile utilise insert (échoue si la ligne existe déjà). À reprendre : décider insert vs upsert « ne rien écraser sur conflit » (upsert naïf = risque d'écraser nom/wilaya existants — footgun données). Happy path uniquement pour l'instant.
+- [ ] **[AVANT fin Phase 1] Route create-profile — devenir fallback :** le trigger 004 est désormais l'ACTEUR PRINCIPAL de création de profil (atomique). La route /api/auth/create-profile fait maintenant double emploi (insert dupliqué → erreur PK si appelée). DÉCISION : la garder comme filet de sécurité défensif (defense-in-depth entreprise) mais la convertir en upsert idempotent « ne rien écraser sur conflit » AVANT fin Phase 1 — OU la supprimer. Tant que non convertie : le formulaire ne l'appelle PAS (le trigger suffit). Code orphelin temporaire.
 - [ ] **[Phase error-hardening] Route create-profile — code erreur :** retourne 500 générique sur toute erreur d'insert ; « ligne déjà existante » devrait être un 409. À affiner dans la passe error-hardening.
 - [ ] **[Quand logger.ts existe] Route create-profile — logging :** échec d'insert non journalisé (TODO logger.ts dans le code). À brancher quand logger.ts existe.
 - [ ] **[Phase 0.3 / Phase 1 — Auth] Signup — orphelins :** un auth.users peut exister sans ligne public.users si le client ferme l'onglet entre auth.signUp() et l'appel à create-profile. À détecter au premier login + réparer. Faible criticité MVP.
@@ -182,5 +182,11 @@ Date: 2026-06-24 · Phase: 0.3 Auth Foundation
 Fait: src/middleware.ts — next-intl v4 + refresh session Supabase, un seul fichier, ordre correct · build 0 erreur · runtime vérifié (détection navigateur Chrome→/en Opera→/fr, /ar RTL)
 Décisions: détection de langue navigateur gardée ACTIVE (pas de force /fr) — meilleure UX trilingue algérienne · warning Edge Runtime process.version = cosmétique, ignoré
 Build: 0 erreur · Commit: 668f24c · Prochaine session: pages auth (login/signup/callback)
+
+### Session 007 — Trigger profil + formulaire signup
+Date: 2026-06-24 · Phase: 0.3 Auth Foundation
+Fait: migration 004 trigger handle_new_user (SECURITY DEFINER, role citoyen forcé, AFTER INSERT auth.users) testé OK · formulaire signup UI + validation client (tokens uidesign, FR/AR RTL vérifiés)
+Décisions: création profil = TRIGGER atomique (choix entreprise, pas frontend multi-étapes) · create-profile devient fallback idempotent futur · langue de travail session = arabe (pédagogie)
+Build: 0 erreur · Prochaine session: câbler signUp() au formulaire
 
 [Sessions suivantes ajoutées ici par l'agent]
