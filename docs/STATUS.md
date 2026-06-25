@@ -107,6 +107,7 @@ Aucun — projet non commencé.
 - [ ] **[Phase 0.3 / Phase 1 — Auth] Signup — orphelins :** un auth.users peut exister sans ligne public.users si le client ferme l'onglet entre auth.signUp() et l'appel à create-profile. À détecter au premier login + réparer. Faible criticité MVP.
 - [ ] **[Phase 0.3 — Auth] Détection "email déjà utilisé" non vérifiée :** SignupForm mappe error.status===422 / regex vers errors.emailTaken, MAIS Supabase masque par défaut les emails déjà inscrits (fake success, anti-énumération T08) — ce code peut ne jamais se déclencher. À tester explicitement et ajuster si besoin.
 - [ ] **[Phase 0.3 — Auth] Pas de libellé "chargement" signup :** bouton réutilise le label submit pendant isLoading (désactivé). Ajouter clé i18n auth.signup.submitting (3 locales) pour un retour visuel clair pendant l'appel réseau.
+- [ ] **[Passe sécurité avant déploiement] npm audit — 5 vulnérabilités (1 moderate, 4 high) :** signalées après install (probablement transitives, dans des sous-dépendances dev). NE PAS lancer `npm audit fix --force` (breaking changes, risque de casser un build qui marche). À auditer dans une passe sécurité dédiée avant déploiement (checklist SECURITY.md). Vérifier `npm audit` en détail à ce moment-là.
 
 ---
 
