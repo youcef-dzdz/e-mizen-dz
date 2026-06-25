@@ -79,3 +79,8 @@ public/models/
 # ==========================================
 *.tgz
 *.tar.gz
+
+# ==========================================
+# CLAUDE CODE — MÉMOIRE AGENT LOCALE (pas du code applicatif)
+# ==========================================
+memory/
