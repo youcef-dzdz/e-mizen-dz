@@ -22,6 +22,17 @@ export async function signOut() {
 // La ligne dans la table users (role='citoyen' forcé) est créée séparément par une
 // route serveur (service_role) — JAMAIS ici (Rule 11). Confirmation email
 // obligatoire avant premier login (déjà activé côté Supabase).
-export async function signUp(email: string, password: string) {
-  return supabaseBrowser.auth.signUp({ email, password })
+export async function signUp(email: string, password: string, locale: string) {
+  return supabaseBrowser.auth.signUp({
+    email,
+    password,
+    options: {
+      // POURQUOI emailRedirectTo : indique à Supabase de renvoyer l'utilisateur vers
+      // notre route callback localisée après confirmation — déclenche le flow PKCE
+      // (code en query) au lieu du flow implicite (token en hash) non géré côté serveur.
+      // POURQUOI window.location.origin : l'URL doit être absolue ET correspondre à
+      // l'origine réelle (localhost en dev, domaine en prod) — pas de valeur en dur.
+      emailRedirectTo: `${window.location.origin}/${locale}/auth/callback`,
+    },
+  })
 }

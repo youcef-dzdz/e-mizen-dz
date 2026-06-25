@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { useTranslations } from 'next-intl'
+import { useTranslations, useLocale } from 'next-intl'
 import { isValidEmail, isStrongPassword } from '@/utils/validation'
 import { signUp } from '@/services/auth'
 
@@ -13,6 +13,9 @@ import { signUp } from '@/services/auth'
 // automatiquement sans code spécifique à la direction.
 export default function SignupForm() {
   const t = useTranslations('auth')
+  // Locale courante (FR/AR/EN) — passée à signUp pour construire l'URL de callback
+  // localisée (emailRedirectTo) afin que la confirmation revienne dans la bonne langue.
+  const locale = useLocale()
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -55,7 +58,7 @@ export default function SignupForm() {
     try {
       // signUp crée UNIQUEMENT l'entrée auth.users ; la ligne users (role citoyen)
       // est créée par le trigger DB côté serveur — on N'appelle PAS create-profile ici.
-      const { error } = await signUp(email, password)
+      const { error } = await signUp(email, password, locale)
 
       if (error) {
         // POURQUOI ne pas exposer error.message brut — Rule 1, message générique
