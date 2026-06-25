@@ -4,6 +4,7 @@
     "welcome": "Welcome"
   },
   "auth": {
+    "submitting": "Please wait...",
     "signup": {
       "title": "Create an account",
       "emailLabel": "Email",

@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useTranslations, useLocale } from 'next-intl'
-import { Eye, EyeOff } from 'lucide-react'
+import { Eye, EyeOff, Loader2 } from 'lucide-react'
 import { isValidEmail } from '@/utils/validation'
 import { signIn } from '@/services/auth'
 
@@ -138,18 +138,20 @@ export default function LoginForm() {
       )}
 
       {/* Bouton primaire : désactivé tant qu'email invalide OU mot de passe vide OU
-          pendant l'appel réseau. Pas de clé "chargement" → on réutilise le libellé
-          submit (jamais de chaîne en dur, Rule 4). */}
+          pendant l'appel réseau. POURQUOI un libellé "patientez" + spinner pendant
+          isLoading : l'utilisateur voit que l'action est en cours, ne re-clique pas et
+          n'est pas perdu pendant la latence réseau. inline-flex/gap-2 aligne les deux. */}
       <button
         type="submit"
         disabled={!formValid || isLoading}
-        className={`w-full rounded-btn p-4 font-medium ${
+        className={`w-full inline-flex items-center justify-center gap-2 rounded-btn p-4 font-medium ${
           formValid && !isLoading
             ? 'bg-espresso text-creme'
             : 'bg-beige text-warm-disabled cursor-not-allowed'
         }`}
       >
-        {t('signin.submit')}
+        {isLoading && <Loader2 size={18} className="animate-spin" />}
+        {isLoading ? t('submitting') : t('signin.submit')}
       </button>
 
       {/* Lien vers l'inscription — href localisé construit à partir de la locale courante. */}

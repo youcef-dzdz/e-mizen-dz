@@ -4,6 +4,7 @@
     "welcome": "Bienvenue"
   },
   "auth": {
+    "submitting": "Veuillez patienter...",
     "signup": {
       "title": "Créer un compte",
       "emailLabel": "Email",

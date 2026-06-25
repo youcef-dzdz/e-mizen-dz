@@ -4,6 +4,7 @@
     "welcome": "مرحبا"
   },
   "auth": {
+    "submitting": "يرجى الانتظار...",
     "signup": {
       "title": "إنشاء حساب",
       "emailLabel": "البريد الإلكتروني",
