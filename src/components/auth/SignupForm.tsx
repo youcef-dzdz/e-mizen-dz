@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useTranslations, useLocale } from 'next-intl'
+import { Eye, EyeOff } from 'lucide-react'
 import { isValidEmail, isStrongPassword } from '@/utils/validation'
 import { signUp } from '@/services/auth'
 
@@ -23,6 +24,8 @@ export default function SignupForm() {
   // pour afficher le message traduit sous le champ concerné.
   const [emailError, setEmailError] = useState<string | null>(null)
   const [passwordError, setPasswordError] = useState<string | null>(null)
+  // Bascule affichage du mot de passe (pure UX) — n'altère ni la valeur ni la validation.
+  const [showPassword, setShowPassword] = useState(false)
 
   // État du flux asynchrone d'inscription. isLoading bloque le double-submit ;
   // submitStatus pilote l'affichage (panneau succès / bloc erreur) ; submitErrorKey
@@ -134,16 +137,32 @@ export default function SignupForm() {
         >
           {t('signup.passwordLabel')}
         </label>
-        <input
-          id="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          onBlur={validatePassword}
-          className={`w-full bg-blanc rounded-btn p-4 text-start border focus:outline-none focus:shadow-focus ${
-            passwordError ? 'border-error' : 'border-warm-border'
-          }`}
-        />
+        {/* Conteneur relatif : ancre le bouton œil À L'INTÉRIEUR du champ. */}
+        <div className="relative">
+          <input
+            id="password"
+            type={showPassword ? 'text' : 'password'}
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onBlur={validatePassword}
+            // pe-12 (padding-inline-end) et pas pr-12 : réserve la place de l'icône du
+            // bon côté en LTR comme en RTL arabe — le texte ne passe jamais sous l'œil.
+            className={`w-full bg-blanc rounded-btn p-4 pe-12 text-start border focus:outline-none focus:shadow-focus ${
+              passwordError ? 'border-error' : 'border-warm-border'
+            }`}
+          />
+          {/* type="button" obligatoire : sans lui, un <button> dans un <form> soumet
+              le formulaire à chaque clic sur l'œil. end-0 (et pas right-0) : l'icône se
+              place à la fin logique, donc à gauche en arabe RTL — miroir automatique. */}
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+            className="absolute inset-y-0 end-0 flex items-center pe-4 text-warm-tertiary"
+          >
+            {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
         {passwordError && (
           <p className="text-error text-sm text-start mt-2">{t(passwordError)}</p>
         )}
