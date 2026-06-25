@@ -6,15 +6,15 @@
 ---
 
 ## Dernière Session
-Date: 2026-06-24 (Session 007 suite)
-Ce qui a été fait: Formulaire signup CÂBLÉ sur signUp() et vérifié de bout en bout. Flux complet testé en réel : page signup → signUp() → auth.users → trigger 004 → public.users (role=citoyen) → email de confirmation reçu → compte confirmé. UX : panneau succès clair, bloc erreur traduit, trigger gère le profil (create-profile PAS appelé).
-Prochaine tâche: masquer la réception du retour de confirmation — construire la route /auth/callback (le lien de confirmation revient actuellement sur /fr#access_token sans handler dédié)
-Résumé point (reprise): signup loop 100% fonctionnel et vérifié. Compte test confirmé en base (youcef.mokhtari). Reste pour finir Phase 0.3 : route callback (confirmation/OAuth) + page login.
+Date: 2026-06-24 (Session 007 — fin)
+Ce qui a été fait: Route /auth/callback construite (échange code PKCE → session, garde anti open-redirect). Redirect URL localhost:3000/** ajoutée au Dashboard Supabase. signUp() câblé avec emailRedirectTo vers /{locale}/auth/callback (déclenche flow PKCE). Build vert.
+Prochaine tâche: TESTER la boucle de confirmation complète de bout en bout (signup → email → clic lien → callback échange code → session posée → redirect propre). PAS encore testé.
+Résumé point (reprise): callback + emailRedirectTo faits et buildés mais NON testés en réel. Compte test youcef.mokhtari déjà confirmé (avant le câblage callback). Pour tester proprement le nouveau flow PKCE : utiliser un email neuf. Après test : messaging UI sur page destination (auth_error / succès) — actuellement aucun composant ne lit ?auth_error=1.
 
 ---
 
 ## Phase Courante
-**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~95% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation ~95% — signup loop câblé & vérifié de bout en bout ; reste route /auth/callback puis page login)
+**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~95% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation ~95% — callback câblé (route + emailRedirectTo, build vert, NON testé end-to-end) ; reste test boucle confirmation + page login)
 **Phase 0.2 ✅ complète:** migrations 001–003 + wilaya seed exécutés sur Supabase le 2026-06-24, vérifiés (wilaya=69, 59–69=11).
 **Phase 0.3 — Auth Foundation 🔵 en cours (Session 007):** pgvector activé (vector 0.8.0) · @supabase/ssr + next-intl v4 installés · src/lib/supabase/server-session.ts ajouté (client SSR cookie/session, anon, respecte RLS — server.ts service_role INCHANGÉ) · squelette i18n complet (routing.ts + request.ts + plugin next.config.mjs + stubs fr/ar/en common + restructure app/[locale] avec dir RTL + NextIntlClientProvider) · middleware fusionné src/middleware.ts (next-intl v4 + refresh session Supabase, un seul fichier, ordre correct) · **migration 004_handle_new_user.sql (trigger AFTER INSERT auth.users → profil public.users auto-créé, role=citoyen forcé) exécutée + testée · formulaire signup UI + validation client (tokens uidesign, FR/AR RTL vérifiés)**. Prochaine immédiate: câbler SignupForm sur auth.ts signUp() (le trigger gère le profil — PAS d'appel à create-profile). **Mise à jour (Session 007 suite): SignupForm câblé sur signUp() et flux signup vérifié de bout en bout en réel (page → auth.users → trigger 004 → public.users role=citoyen → email confirmé). Prochaine immédiate: route /auth/callback (handler confirmation/OAuth) puis page login.**
 Numérotation migrations (ordre dépendance FK, verrouillé): 001 wilaya · 002 specialites · 003 users. (Ancien "001 users / 002 wilaya / 025 specialites" corrigé Session 002 — users.wilaya_id réfère wilaya.)
@@ -196,5 +196,11 @@ Date: 2026-06-24 · Phase: 0.3 Auth Foundation
 Fait: SignupForm câblé sur signUp() · flux signup complet testé en réel (page→auth.users→trigger→users role=citoyen→email confirmé) · UX succès/erreur traduite
 Décisions: trigger gère le profil (create-profile non appelé) · compte test youcef.mokhtari gardé pour tester login
 Build: 0 erreur · Prochaine session: route /auth/callback puis page login
+
+### Session 007 (fin) — Route callback + emailRedirectTo
+Date: 2026-06-24 · Phase: 0.3 Auth Foundation
+Fait: route /auth/callback (échange PKCE, anti open-redirect) · Redirect URL Dashboard ajoutée · signUp emailRedirectTo localisé · build 0 erreur
+Décisions: flow PKCE (code query) au lieu d'implicite (hash) · callback ne rend pas d'UI (redirige seulement) · messaging page destination = étape suivante
+Build: 0 erreur · NON testé end-to-end · Prochaine session: tester boucle confirmation complète (email neuf) puis page login
 
 [Sessions suivantes ajoutées ici par l'agent]
