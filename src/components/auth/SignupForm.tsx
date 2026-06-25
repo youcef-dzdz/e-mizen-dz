@@ -20,12 +20,20 @@ export default function SignupForm() {
 
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  // POURQUOI confirmer le mot de passe : une faute de frappe invisible (champ masqué)
+  // enfermerait l'utilisateur hors de son compte dès la première connexion. La
+  // double-saisie force la cohérence avant la création du compte.
+  const [confirmPassword, setConfirmPassword] = useState('')
   // Erreurs par champ : null = pas encore validé / valide. La clé i18n est stockée
   // pour afficher le message traduit sous le champ concerné.
   const [emailError, setEmailError] = useState<string | null>(null)
   const [passwordError, setPasswordError] = useState<string | null>(null)
+  const [confirmError, setConfirmError] = useState<string | null>(null)
   // Bascule affichage du mot de passe (pure UX) — n'altère ni la valeur ni la validation.
   const [showPassword, setShowPassword] = useState(false)
+  // POURQUOI son propre showConfirmPassword : la bascule du champ confirmation est
+  // indépendante de celle du mot de passe — révéler l'un ne doit jamais révéler l'autre.
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   // État du flux asynchrone d'inscription. isLoading bloque le double-submit ;
   // submitStatus pilote l'affichage (panneau succès / bloc erreur) ; submitErrorKey
@@ -35,7 +43,13 @@ export default function SignupForm() {
   const [submitErrorKey, setSubmitErrorKey] = useState<string | null>(null)
 
   // Validité dérivée : sert à (dé)activer le bouton sans dupliquer la logique.
-  const formValid = isValidEmail(email) && isStrongPassword(password)
+  // La confirmation doit être non vide ET identique au mot de passe — le bouton reste
+  // bloqué tant que les deux saisies ne concordent pas.
+  const formValid =
+    isValidEmail(email) &&
+    isStrongPassword(password) &&
+    confirmPassword.length > 0 &&
+    confirmPassword === password
 
   function validateEmail() {
     setEmailError(isValidEmail(email) ? null : 'errors.emailInvalid')
@@ -45,12 +59,23 @@ export default function SignupForm() {
     setPasswordError(isStrongPassword(password) ? null : 'errors.passwordWeak')
   }
 
+  // Erreur de concordance affichée seulement si la confirmation est saisie : on ne
+  // crie pas « ça ne correspond pas » sur un champ encore vide.
+  function validateConfirm() {
+    setConfirmError(
+      confirmPassword.length > 0 && confirmPassword !== password
+        ? 'errors.passwordMismatch'
+        : null
+    )
+  }
+
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault()
     // Revalidation complète au submit (le client n'est jamais la source de vérité,
     // mais ici c'est l'UX : on affiche toutes les erreurs d'un coup).
     validateEmail()
     validatePassword()
+    validateConfirm()
     if (!formValid) return
 
     // On verrouille le formulaire et on repart d'un état propre avant l'appel réseau.
@@ -76,6 +101,7 @@ export default function SignupForm() {
         setSubmitStatus('success')
         setEmail('')
         setPassword('')
+        setConfirmPassword('')
       }
     } finally {
       setIsLoading(false)
@@ -165,6 +191,46 @@ export default function SignupForm() {
         </div>
         {passwordError && (
           <p className="text-error text-sm text-start mt-2">{t(passwordError)}</p>
+        )}
+      </div>
+
+      {/* Champ confirmation du mot de passe — miroir exact du champ ci-dessus, avec sa
+          propre bascule d'affichage (showConfirmPassword) indépendante. */}
+      <div className="mb-6">
+        <label
+          htmlFor="confirmPassword"
+          className="block text-start text-ink mb-2"
+        >
+          {t('signup.confirmPasswordLabel')}
+        </label>
+        {/* Conteneur relatif : ancre le bouton œil À L'INTÉRIEUR du champ. */}
+        <div className="relative">
+          <input
+            id="confirmPassword"
+            type={showConfirmPassword ? 'text' : 'password'}
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            onBlur={validateConfirm}
+            // pe-12 (padding-inline-end) et pas pr-12 : réserve la place de l'icône du
+            // bon côté en LTR comme en RTL arabe — le texte ne passe jamais sous l'œil.
+            className={`w-full bg-blanc rounded-btn p-4 pe-12 text-start border focus:outline-none focus:shadow-focus ${
+              confirmError ? 'border-error' : 'border-warm-border'
+            }`}
+          />
+          {/* type="button" obligatoire : sans lui, un <button> dans un <form> soumet
+              le formulaire à chaque clic sur l'œil. end-0 (et pas right-0) : l'icône se
+              place à la fin logique, donc à gauche en arabe RTL — miroir automatique. */}
+          <button
+            type="button"
+            onClick={() => setShowConfirmPassword((v) => !v)}
+            aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
+            className="absolute inset-y-0 end-0 flex items-center pe-4 text-warm-tertiary"
+          >
+            {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+          </button>
+        </div>
+        {confirmError && (
+          <p className="text-error text-sm text-start mt-2">{t(confirmError)}</p>
         )}
       </div>
 
