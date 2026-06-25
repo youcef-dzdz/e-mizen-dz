@@ -2,5 +2,29 @@
   "common": {
     "appName": "E-Mizen DZ",
     "welcome": "Bienvenue"
+  },
+  "auth": {
+    "signup": {
+      "title": "Créer un compte",
+      "emailLabel": "Email",
+      "passwordLabel": "Mot de passe",
+      "submit": "S'inscrire",
+      "success": "Compte créé. Vérifiez votre email pour confirmer."
+    },
+    "signin": {
+      "title": "Se connecter",
+      "emailLabel": "Email",
+      "passwordLabel": "Mot de passe",
+      "submit": "Se connecter",
+      "noAccount": "Pas encore de compte ? S'inscrire"
+    },
+    "errors": {
+      "emailInvalid": "Adresse email invalide",
+      "passwordWeak": "Mot de passe trop faible (min 8 caractères, 1 majuscule, 1 chiffre)",
+      "generic": "Une erreur est survenue. Réessayez.",
+      "emailTaken": "Cet email est déjà utilisé.",
+      "invalidCredentials": "Email ou mot de passe incorrect",
+      "emailNotConfirmed": "Veuillez confirmer votre email avant de vous connecter."
+    }
   }
 }
