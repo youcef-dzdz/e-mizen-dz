@@ -6,15 +6,15 @@
 ---
 
 ## Dernière Session
-Date: 2026-06-24 (Session 007 — fin)
-Ce qui a été fait: Route /auth/callback construite (échange code PKCE → session, garde anti open-redirect). Redirect URL localhost:3000/** ajoutée au Dashboard Supabase. signUp() câblé avec emailRedirectTo vers /{locale}/auth/callback (déclenche flow PKCE). Build vert.
-Prochaine tâche: TESTER la boucle de confirmation complète de bout en bout (signup → email → clic lien → callback échange code → session posée → redirect propre). PAS encore testé.
-Résumé point (reprise): callback + emailRedirectTo faits et buildés mais NON testés en réel. Compte test youcef.mokhtari déjà confirmé (avant le câblage callback). Pour tester proprement le nouveau flow PKCE : utiliser un email neuf. Après test : messaging UI sur page destination (auth_error / succès) — actuellement aucun composant ne lit ?auth_error=1.
+Date: 2026-06-26 (Session 008)
+Ce qui a été fait: NOYAU AUTH VÉRIFIÉ DE BOUT EN BOUT en réel. Chaîne complète testée : signup (form + validation + confirm password + show/hide) → signUp() PKCE → auth.users → trigger → public.users (role=citoyen) → email confirmation → /auth/callback (échange code PKCE) → cookie sb- session posé → login → session vérifiée (cookie sb-auth-token présent et décodé). Corrigé : client.ts utilise createBrowserClient (PKCE+cookies, pas implicit+localStorage). Améliorations UX : show/hide password (Eye, RTL-safe), confirm password (mismatch validation), loading state (spinner + libellé). Crise git résolue : validation.ts était untracked (jamais commité), corrigé.
+Prochaine tâche: décider — password reset (mot de passe oublié) OU clôturer Phase 0.3 et passer à Phase 1
+Résumé point (reprise): Auth Foundation noyau 100% fonctionnel et vérifié (signup/callback/login/session). Compte test mokhtari.yusif confirmé en base. Reste optionnel : password reset, resend confirmation (groupe B, non construits). Sinon Phase 0.3 close.
 
 ---
 
 ## Phase Courante
-**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~95% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation ~95% — callback câblé (route + emailRedirectTo, build vert, NON testé end-to-end) ; reste test boucle confirmation + page login)
+**Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~98% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation ~98% — noyau vérifié E2E ; reste optionnel password reset OU passer Phase 1)
 **Phase 0.2 ✅ complète:** migrations 001–003 + wilaya seed exécutés sur Supabase le 2026-06-24, vérifiés (wilaya=69, 59–69=11).
 **Phase 0.3 — Auth Foundation 🔵 en cours (Session 007):** pgvector activé (vector 0.8.0) · @supabase/ssr + next-intl v4 installés · src/lib/supabase/server-session.ts ajouté (client SSR cookie/session, anon, respecte RLS — server.ts service_role INCHANGÉ) · squelette i18n complet (routing.ts + request.ts + plugin next.config.mjs + stubs fr/ar/en common + restructure app/[locale] avec dir RTL + NextIntlClientProvider) · middleware fusionné src/middleware.ts (next-intl v4 + refresh session Supabase, un seul fichier, ordre correct) · **migration 004_handle_new_user.sql (trigger AFTER INSERT auth.users → profil public.users auto-créé, role=citoyen forcé) exécutée + testée · formulaire signup UI + validation client (tokens uidesign, FR/AR RTL vérifiés)**. Prochaine immédiate: câbler SignupForm sur auth.ts signUp() (le trigger gère le profil — PAS d'appel à create-profile). **Mise à jour (Session 007 suite): SignupForm câblé sur signUp() et flux signup vérifié de bout en bout en réel (page → auth.users → trigger 004 → public.users role=citoyen → email confirmé). Prochaine immédiate: route /auth/callback (handler confirmation/OAuth) puis page login.**
 Numérotation migrations (ordre dépendance FK, verrouillé): 001 wilaya · 002 specialites · 003 users. (Ancien "001 users / 002 wilaya / 025 specialites" corrigé Session 002 — users.wilaya_id réfère wilaya.)
@@ -203,5 +203,11 @@ Date: 2026-06-24 · Phase: 0.3 Auth Foundation
 Fait: route /auth/callback (échange PKCE, anti open-redirect) · Redirect URL Dashboard ajoutée · signUp emailRedirectTo localisé · build 0 erreur
 Décisions: flow PKCE (code query) au lieu d'implicite (hash) · callback ne rend pas d'UI (redirige seulement) · messaging page destination = étape suivante
 Build: 0 erreur · NON testé end-to-end · Prochaine session: tester boucle confirmation complète (email neuf) puis page login
+
+### Session 008 — Noyau auth vérifié E2E + améliorations UX
+Date: 2026-06-26 · Phase: 0.3 Auth Foundation
+Fait: chaîne signup→trigger→callback PKCE→login→session cookie vérifiée en réel (cookie sb- confirmé) · fix client.ts createBrowserClient · show/hide + confirm password + loading state · lucide-react ajouté · crise git (validation.ts untracked) résolue
+Décisions: createBrowserClient obligatoire en SSR (cookies pas localStorage) · git status après CHAQUE commit (leçon: validation.ts perdu) · MFA/CAPTCHA/social = Future Building
+Build: 0 erreur · Prochaine session: password reset OU Phase 1
 
 [Sessions suivantes ajoutées ici par l'agent]
