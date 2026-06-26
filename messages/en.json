@@ -20,6 +20,21 @@
       "submit": "Sign in",
       "noAccount": "No account yet? Sign up"
     },
+    "forgot": {
+      "title": "Forgot password",
+      "description": "Enter your email. We'll send you a link to reset your password.",
+      "emailLabel": "Email",
+      "submit": "Send link",
+      "success": "If an account exists for this email, a reset link has been sent. Check your inbox.",
+      "backToLogin": "Back to sign in"
+    },
+    "reset": {
+      "title": "New password",
+      "passwordLabel": "New password",
+      "confirmLabel": "Confirm new password",
+      "submit": "Reset",
+      "success": "Password reset. You can now sign in."
+    },
     "errors": {
       "emailInvalid": "Invalid email address",
       "passwordWeak": "Password too weak (min 8 chars, 1 uppercase, 1 number)",
@@ -27,7 +42,8 @@
       "generic": "Something went wrong. Try again.",
       "emailTaken": "This email is already in use.",
       "invalidCredentials": "Incorrect email or password",
-      "emailNotConfirmed": "Please confirm your email before signing in."
+      "emailNotConfirmed": "Please confirm your email before signing in.",
+      "resetLinkInvalid": "The reset link is invalid or has expired. Please request a new one."
     }
   }
 }

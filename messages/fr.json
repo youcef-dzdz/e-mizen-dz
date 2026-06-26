@@ -20,6 +20,21 @@
       "submit": "Se connecter",
       "noAccount": "Pas encore de compte ? S'inscrire"
     },
+    "forgot": {
+      "title": "Mot de passe oublié",
+      "description": "Entrez votre email. Nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+      "emailLabel": "Email",
+      "submit": "Envoyer le lien",
+      "success": "Si un compte existe pour cet email, un lien de réinitialisation a été envoyé. Vérifiez votre boîte mail.",
+      "backToLogin": "Retour à la connexion"
+    },
+    "reset": {
+      "title": "Nouveau mot de passe",
+      "passwordLabel": "Nouveau mot de passe",
+      "confirmLabel": "Confirmer le nouveau mot de passe",
+      "submit": "Réinitialiser",
+      "success": "Mot de passe réinitialisé. Vous pouvez maintenant vous connecter."
+    },
     "errors": {
       "emailInvalid": "Adresse email invalide",
       "passwordWeak": "Mot de passe trop faible (min 8 caractères, 1 majuscule, 1 chiffre)",
@@ -27,7 +42,8 @@
       "generic": "Une erreur est survenue. Réessayez.",
       "emailTaken": "Cet email est déjà utilisé.",
       "invalidCredentials": "Email ou mot de passe incorrect",
-      "emailNotConfirmed": "Veuillez confirmer votre email avant de vous connecter."
+      "emailNotConfirmed": "Veuillez confirmer votre email avant de vous connecter.",
+      "resetLinkInvalid": "Le lien de réinitialisation est invalide ou a expiré. Veuillez en demander un nouveau."
     }
   }
 }
