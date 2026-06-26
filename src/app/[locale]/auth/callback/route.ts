@@ -21,6 +21,11 @@ export async function GET(
   const code = searchParams.get("code");
   // Cible de redirection post-connexion ; défaut = racine de l'app localisée.
   const next = searchParams.get("next") ?? "/";
+  // POURQUOI type=recovery : après l'échange du code, l'utilisateur a une session
+  // valide mais doit définir un nouveau mot de passe ; on l'envoie vers la page
+  // dédiée au lieu de l'accueil. L'échange du code reste identique (récupération =
+  // aussi un code PKCE).
+  const type = searchParams.get("type");
 
   // Construit un chemin propre dans la locale courante en évitant un double slash
   // (next = "/" ne doit pas produire "/fr/").
@@ -42,7 +47,9 @@ export async function GET(
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
-      // Session posée: on renvoie vers une page applicative propre dans la locale.
+      if (type === "recovery") {
+        return NextResponse.redirect(`${origin}/${locale}/auth/reset-password`);
+      }
       return NextResponse.redirect(successUrl);
     }
 
