@@ -96,7 +96,7 @@ Aucun — projet non commencé.
 ---
 
 ## Dette Technique Connue (à traiter dans la phase indiquée)
-- [ ] **[AVANT Phase 1] Seed specialites** — table créée (002) mais 0 lignes. Avocat_specialites (Phase 1) en dépend. Liste des spécialités juridiques à définir.
+- ✅ **[AVANT Phase 1] Seed specialites — RÉSOLUE (Session 009).** Catalogue de 20 spécialités juridiques algériennes + « autre » (id=99) ajouté à seed.sql, exécuté sur Supabase, count=21 vérifié. Commit `0f72f64` poussé. Décision « avocat généraliste » = option B (select-all UI, à implémenter Phase 1), PAS un row dans specialites.
 - [ ] **[AVANT Phase 2 — Haversine] Vérifier coordonnées chef-lieu wilayas 49–69** (21 lignes ⚠️ VERIF dans seed.sql) contre Google Maps. Seedées non vérifiées le 2026-06-24.
 - ✅ **[Phase 0.3 — Auth] Client de session SSR — RÉSOLU (Session 005, formulation antérieure imprécise).** L'ancienne dette disait « réécrire server.ts avec @supabase/ssr » — c'était imprécis. server.ts (clé service_role, bypass RLS) reste INCHANGÉ par design : il n'a jamais eu vocation à porter les sessions. La gestion de session a été ajoutée dans un fichier NOUVEAU `src/lib/supabase/server-session.ts` (@supabase/ssr, clé anon, lecture/écriture cookies, respecte RLS). Les deux clients coexistent : server.ts = privilégié serveur, server-session.ts = session utilisateur.
 - [ ] **[Phase 0.3 — i18n] Fichiers de messages = stubs (namespace `common` uniquement).** messages/fr.json, ar.json, en.json ne contiennent que le namespace `common` (Session 005). Les traductions complètes sont à fournir par composant UI au fur et à mesure des phases ; Rule 4 impose le trio fr/ar/en en lockstep (clé manquante dans un fichier = build bloquant, clé déclarée jamais référencée = à supprimer).
@@ -216,5 +216,11 @@ Date: 2026-06-26 · Phase: 0.3 Auth Foundation → TERMINÉE
 Fait: flow reset complet (forgot + callback type=recovery + reset-password + updatePassword + lien login) vérifié E2E en réel · auth 100% fonctionnelle
 Décisions: lien reset = usage unique (un clic, sinon auth_error=1 normal) · le code callback gérait déjà recovery correctement, l'échec initial = lien déjà consommé · MFA/social/resend = Future Building
 Build: 0 erreur · Prochaine session: Phase 1 — Avocat Profile & Cabinet
+
+### Session 009 — Seed specialites
+Date: 2026-06-26 · Phase: 0.3→1 transition
+Fait: catalogue specialites (20 spécialités juridiques algériennes + « autre » id=99) ajouté à seed.sql, exécuté sur Supabase, count=21 vérifié. Décision « avocat généraliste » = option B (select-all UI) — à implémenter Phase 1, PAS un row dans specialites.
+Build: N/A (SQL data) · Commit: 0f72f64 poussé
+Prochaine session: Phase 1 — table cabinets (migration + RLS + tests négatifs)
 
 [Sessions suivantes ajoutées ici par l'agent]
