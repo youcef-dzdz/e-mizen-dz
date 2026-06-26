@@ -36,3 +36,14 @@ export async function signUp(email: string, password: string, locale: string) {
     },
   })
 }
+
+// Demande de réinitialisation de mot de passe par email.
+// POURQUOI redirectTo vers /auth/callback?type=recovery : Supabase renvoie l'utilisateur
+// vers notre callback avec un code PKCE ; le param type=recovery dira au callback de
+// rediriger vers la page "nouveau mot de passe" (et pas l'accueil).
+// POURQUOI window.location.origin : URL absolue, origine réelle (localhost/prod).
+export async function resetPasswordForEmail(email: string, locale: string) {
+  return supabaseBrowser.auth.resetPasswordForEmail(email, {
+    redirectTo: `${window.location.origin}/${locale}/auth/callback?type=recovery`,
+  })
+}
