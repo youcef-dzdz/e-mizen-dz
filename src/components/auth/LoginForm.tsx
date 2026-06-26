@@ -128,6 +128,12 @@ export default function LoginForm() {
             {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
           </button>
         </div>
+        <Link
+          href={`/${locale}/auth/forgot-password`}
+          className="block text-end text-espresso text-sm mt-2 underline"
+        >
+          {t('forgot.title')}
+        </Link>
       </div>
 
       {/* Bloc erreur : message générique traduit issu d'une clé i18n connue (Rule 1). */}
