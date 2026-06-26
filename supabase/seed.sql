@@ -87,3 +87,40 @@ insert into public.wilaya (id, code, nom_fr, nom_ar, latitude, longitude) values
   (68, '68', 'Bou Saâda',           'بوسعادة',        35.2125,   4.1772),  -- ⚠️ VERIF
   (69, '69', 'El Abiodh Sidi Cheikh','الأبيض سيدي الشيخ', 32.9000, 0.5500)  -- ⚠️ VERIF
 on conflict (id) do nothing;
+
+-- =============================================================================
+-- Données de référence : les 21 spécialités juridiques
+-- -----------------------------------------------------------------------------
+-- POURQUOI : données de référence publiques (Public SELECT, migration 002).
+--   Lues par les filtres de la marketplace en Phase 2 (recherche avocat par
+--   spécialité). Catalogue fermé, géré côté plateforme — pas de saisie libre.
+-- COLONNES : id, slug, nom_fr, nom_ar. `actif` et `created_at` ne sont PAS
+--   fournis → valeurs par défaut de la table.
+-- ID 99 = 'autre' (fourre-tout, volontairement hors de la séquence 1..20).
+-- =============================================================================
+
+-- POURQUOI on conflict : rend le seed idempotent — un re-run ne casse pas sur
+--   la contrainte PK (id), il ignore simplement les lignes déjà présentes.
+insert into public.specialites (id, slug, nom_fr, nom_ar) values
+  (1,  'droit-penal',              'Droit pénal',                 'القانون الجنائي'),
+  (2,  'droit-civil',              'Droit civil',                 'القانون المدني'),
+  (3,  'droit-de-la-famille',      'Droit de la famille',         'قانون الأسرة'),
+  (4,  'droit-immobilier',         'Droit immobilier',            'القانون العقاري'),
+  (5,  'droit-commercial',         'Droit commercial',            'القانون التجاري'),
+  (6,  'droit-des-societes',       'Droit des sociétés',          'قانون الشركات'),
+  (7,  'droit-administratif',      'Droit administratif',         'القانون الإداري'),
+  (8,  'droit-du-travail',         'Droit du travail',            'قانون العمل'),
+  (9,  'droit-fiscal',             'Droit fiscal',                'القانون الجبائي'),
+  (10, 'droit-douanier',           'Droit douanier',              'القانون الجمركي'),
+  (11, 'droit-bancaire-financier', 'Droit bancaire et financier', 'القانون البنكي والمالي'),
+  (12, 'droit-des-assurances',     'Droit des assurances',        'قانون التأمينات'),
+  (13, 'droit-investissement',     'Droit de l''investissement',  'قانون الاستثمار'),
+  (14, 'propriete-intellectuelle', 'Propriété intellectuelle',    'الملكية الفكرية'),
+  (15, 'cybercriminalite',         'Cybercriminalité',            'الجرائم الإلكترونية'),
+  (16, 'droit-marches-publics',    'Droit des marchés publics',   'قانون الصفقات العمومية'),
+  (17, 'droit-consommation',       'Droit de la consommation',    'قانون حماية المستهلك'),
+  (18, 'droit-environnement',      'Droit de l''environnement',   'قانون البيئة'),
+  (19, 'droit-international',       'Droit international',          'القانون الدولي'),
+  (20, 'arbitrage-mediation',      'Arbitrage et médiation',      'التحكيم والوساطة'),
+  (99, 'autre',                    'Autre',                       'أخرى')
+on conflict (id) do nothing;
