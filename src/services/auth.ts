@@ -47,3 +47,12 @@ export async function resetPasswordForEmail(email: string, locale: string) {
     redirectTo: `${window.location.origin}/${locale}/auth/callback?type=recovery`,
   })
 }
+
+// Mise à jour du mot de passe du compte authentifié.
+// POURQUOI updateUser : l'utilisateur arrive ici APRÈS l'échange du code recovery
+// (callback), donc il a une session valide ; updateUser change le mot de passe du
+// compte authentifié. Pas besoin de l'ancien mot de passe (le lien email prouve
+// l'identité). Renvoie le résultat brut (Rule 1).
+export async function updatePassword(newPassword: string) {
+  return supabaseBrowser.auth.updateUser({ password: newPassword })
+}
