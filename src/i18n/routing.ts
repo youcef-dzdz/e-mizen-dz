@@ -1,4 +1,5 @@
 import {defineRouting} from 'next-intl/routing';
+import {createNavigation} from 'next-intl/navigation';
 
 // Configuration centrale du routage i18n.
 // POURQUOI: source de vérité unique des locales — réutilisée par request.ts,
@@ -14,3 +15,10 @@ export const routing = defineRouting({
   // pour des URLs explicites, partageables et indexables sans ambiguïté de langue.
   localePrefix: 'always'
 });
+
+// Helpers de navigation conscients de la locale (next-intl v4).
+// POURQUOI: createNavigation génère Link/usePathname/useRouter qui gèrent
+// automatiquement le préfixe /fr,/ar,/en — y compris avec query params,
+// ce qui rend la recherche (Phase 2) robuste sans bricoler les URLs à la main.
+export const {Link, redirect, usePathname, useRouter, getPathname} =
+  createNavigation(routing);

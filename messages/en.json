@@ -1,11 +1,13 @@
 {
   "common": {
     "appName": "E-Mizen DZ",
-    "welcome": "Welcome"
+    "welcome": "Welcome",
+    "tagline": "Your Algerian legal platform"
   },
   "auth": {
     "submitting": "Please wait...",
     "signup": {
+      "pageTitle": "Sign up — E-Mizen DZ",
       "title": "Create an account",
       "emailLabel": "Email",
       "passwordLabel": "Password",
@@ -14,6 +16,7 @@
       "success": "Account created. Check your email to confirm."
     },
     "signin": {
+      "pageTitle": "Sign in — E-Mizen DZ",
       "title": "Sign in",
       "emailLabel": "Email",
       "passwordLabel": "Password",
@@ -21,6 +24,7 @@
       "noAccount": "No account yet? Sign up"
     },
     "forgot": {
+      "pageTitle": "Forgot password — E-Mizen DZ",
       "title": "Forgot password",
       "description": "Enter your email. We'll send you a link to reset your password.",
       "emailLabel": "Email",
@@ -29,6 +33,7 @@
       "backToLogin": "Back to sign in"
     },
     "reset": {
+      "pageTitle": "New password — E-Mizen DZ",
       "title": "New password",
       "passwordLabel": "New password",
       "confirmLabel": "Confirm new password",

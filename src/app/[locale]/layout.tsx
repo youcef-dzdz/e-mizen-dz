@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, setRequestLocale } from "next-intl/server";
 import { routing } from "../../i18n/routing";
+import LanguageSwitcher from "@/components/shared/LanguageSwitcher";
 import "../globals.css";
 
 // Métadonnées du produit. POURQUOI ici: le layout [locale] possède désormais
@@ -46,6 +47,13 @@ export default async function LocaleLayout({
     <html lang={locale} dir={locale === "ar" ? "rtl" : "ltr"}>
       <body>
         <NextIntlClientProvider messages={messages}>
+          {/* Switcher global en haut de page. POURQUOI ici (layout [locale]) et
+              pas dans AuthLayout: élément transverse — codé une fois, présent sur
+              tous les modules (DRY). justify-end + classes logiques (pas de right
+              en dur) pour qu'en arabe (dir=rtl) il se reflète automatiquement. */}
+          <div className="flex justify-end p-4">
+            <LanguageSwitcher />
+          </div>
           {children}
         </NextIntlClientProvider>
       </body>

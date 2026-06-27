@@ -82,7 +82,7 @@ export default function ForgotPasswordForm() {
           <button
             type="submit"
             disabled={!formValid || isLoading}
-            className={`w-full inline-flex items-center justify-center gap-2 rounded-btn p-4 font-medium ${
+            className={`w-full inline-flex items-center justify-center gap-2 rounded-btn py-3 font-medium ${
               formValid && !isLoading
                 ? 'bg-espresso text-creme'
                 : 'bg-beige text-warm-disabled cursor-not-allowed'

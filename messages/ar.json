@@ -1,11 +1,13 @@
 {
   "common": {
     "appName": "E-Mizen DZ",
-    "welcome": "مرحبا"
+    "welcome": "مرحبا",
+    "tagline": "منصتك القانونية الجزائرية"
   },
   "auth": {
     "submitting": "يرجى الانتظار...",
     "signup": {
+      "pageTitle": "إنشاء حساب — E-Mizen DZ",
       "title": "إنشاء حساب",
       "emailLabel": "البريد الإلكتروني",
       "passwordLabel": "كلمة المرور",
@@ -14,6 +16,7 @@
       "success": "تم إنشاء الحساب. تحقق من بريدك الإلكتروني للتأكيد."
     },
     "signin": {
+      "pageTitle": "تسجيل الدخول — E-Mizen DZ",
       "title": "تسجيل الدخول",
       "emailLabel": "البريد الإلكتروني",
       "passwordLabel": "كلمة المرور",
@@ -21,6 +24,7 @@
       "noAccount": "ليس لديك حساب بعد؟ سجّل الآن"
     },
     "forgot": {
+      "pageTitle": "نسيت كلمة المرور — E-Mizen DZ",
       "title": "نسيت كلمة المرور",
       "description": "أدخل بريدك الإلكتروني. سنرسل لك رابطًا لإعادة تعيين كلمة المرور.",
       "emailLabel": "البريد الإلكتروني",
@@ -29,6 +33,7 @@
       "backToLogin": "العودة إلى تسجيل الدخول"
     },
     "reset": {
+      "pageTitle": "كلمة مرور جديدة — E-Mizen DZ",
       "title": "كلمة مرور جديدة",
       "passwordLabel": "كلمة المرور الجديدة",
       "confirmLabel": "تأكيد كلمة المرور الجديدة",
