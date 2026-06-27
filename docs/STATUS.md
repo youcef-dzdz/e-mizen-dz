@@ -14,7 +14,7 @@ Résumé point (reprise): Auth Foundation 100% COMPLÈTE et vérifiée — signu
 ---
 
 ## Phase Courante
-**Phase 1 — Avocat Profile & Cabinet** · Statut: 🔵 DÉMARRÉE · Première livraison : table **cabinets** (migration 005 + RLS SELECT public / écriture service_role + tests négatifs RLS 4 ops vérifiés sur Supabase). Couche GRANT/REVOKE explicite (least privilege) ajoutée aux 4 tables (001/002/003/005) suite au changement de défaut Supabase (30 mai 2026). Prochaine : migration avocats (statut enum, n° Barreau, verifie_jusqu_a, cabinet_id FK).
+**Phase 1 — Avocat Profile & Cabinet** · Statut: 🔵 DÉMARRÉE · **SCHÉMA Phase 1 COMPLET (Session 010)** : les 4 tables migrées + RLS + tests négatifs vérifiés sur Supabase — 005_cabinets, 006_avocats (enum avocat_statut, RLS T03 stricte + anti-auto-vérification), 007_avocat_specialites (jointure N:N, PK composite), 008_disponibilites (récurrent hebdo, 2 CHECK, soft delete). Couche GRANT/REVOKE explicite (least privilege) appliquée suite au changement de défaut Supabase (30 mai 2026). ⚠️ **Phase 1 PAS terminée — seule sa fondation données est posée.** La partie applicative + UI reste à faire : inscription avocat (email only, upload documents bucket privé, statut en_attente), profil public /marketplace/[avocatId], paramètres cabinet.
 **Phase 0.3 — Auth Foundation** · Statut: ✅ TERMINÉE (100%) · Finition UI auth faite (Session 009 suite) : AuthLayout partagé + LanguageSwitcher global + titres navigateur traduits + boutons affinés py-3 sur les 4 formulaires. Phase 0.3 close à 100 % sur **tous les niveaux** (logic + UI + i18n + RTL testés FR/AR). · Prochaine : Phase 1 (Avocat Profile & Cabinet).
 **Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~98% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation ✅ TERMINÉE — vérifiée E2E, password reset complet inclus)
 **Phase 0.2 ✅ complète:** migrations 001–003 + wilaya seed exécutés sur Supabase le 2026-06-24, vérifiés (wilaya=69, 59–69=11).
@@ -110,6 +110,7 @@ Aucun — projet non commencé.
 - [ ] **[Phase 0.3 — Auth] Détection "email déjà utilisé" non vérifiée :** SignupForm mappe error.status===422 / regex vers errors.emailTaken, MAIS Supabase masque par défaut les emails déjà inscrits (fake success, anti-énumération T08) — ce code peut ne jamais se déclencher. À tester explicitement et ajuster si besoin.
 - [ ] **[Phase 0.3 — Auth] Pas de libellé "chargement" signup :** bouton réutilise le label submit pendant isLoading (désactivé). Ajouter clé i18n auth.signup.submitting (3 locales) pour un retour visuel clair pendant l'appel réseau.
 - 🟢 **[Phase 1 — GRANT/REVOKE] REVOKE des privilèges non nécessaire — vérifié.** Le nouveau défaut Supabase ne grant plus SELECT/INSERT/UPDATE/DELETE par défaut (changement 30 mai 2026), donc aucun REVOKE préalable n'est requis. Le hardening REVOKE complet des rôles est déjà couvert par la couche GRANT explicite (least privilege) ajoutée aux 4 tables (001/002/003/005).
+- [ ] **[Phase 1 — barreau]** La colonne avocats.barreau est en texte libre. À normaliser en table de référence (FK) quand la liste officielle UNOA des barreaux algériens sera obtenue. Texte temporaire = dette consciente, pas oubli.
 - [ ] **[Passe sécurité avant déploiement] npm audit — 5 vulnérabilités (1 moderate, 4 high) :** signalées après install (probablement transitives, dans des sous-dépendances dev). NE PAS lancer `npm audit fix --force` (breaking changes, risque de casser un build qui marche). À auditer dans une passe sécurité dédiée avant déploiement (checklist SECURITY.md). Vérifier `npm audit` en détail à ce moment-là.
 
 ---
@@ -237,5 +238,11 @@ Date: 2026-06-27 · Phase: 0.3 (clôture définitive UI) → 1
 Fait: AuthLayout partagé (logo + wordmark "E-Mizen DZ" DZ en or + tagline traduite) · LanguageSwitcher global (FR·AR·EN, RTL-safe, helpers createNavigation dans routing.ts) · titres navigateur traduits par locale (generateMetadata + getTranslations) · espacements resserrés + bouton affiné (py-3) sur les 4 formulaires · clé common.tagline + 4 clés auth.*.pageTitle (3 locales lockstep). Testé visuellement les 4 pages × FR/AR, RTL arabe vérifié propre (labels à droite, œil à gauche, miroir auto via classes logiques).
 Build: 0 erreur · Commit: 3a80718 poussé
 Prochaine session: Phase 1 — migration avocats (statut enum, n° Barreau, verifie_jusqu_a, cabinet_id FK)
+
+### Session 010 — Schéma Phase 1 complet (4 tables)
+Date: 2026-06-27 · Phase: 1 (Avocat Profile & Cabinet)
+Fait: les 4 tables du schéma Phase 1 migrées + RLS + tests négatifs vérifiés sur Supabase : 005_cabinets, 006_avocats (enum avocat_statut 4 valeurs, RLS T03 stricte : public voit verifie only + owner voit sa ligne, anti-auto-vérification testée), 007_avocat_specialites (jointure N:N, PK composite, hard delete justifié), 008_disponibilites (récurrent hebdo ISO 8601, 2 CHECK, soft delete). Décisions clés : avocat.id = PK partagée users.id (extension 1:1) · barreau = texte (dette : normaliser en table UNOA plus tard) · pratique_generale booléen (option C) · tests idempotents via ON CONFLICT (leçon : begin/rollback non fiable dans SQL Editor + auth.users non nettoyable).
+Commits: 7bf8c4e (cabinets), 538b4f6 (avocats), 7c6349f (avocat_specialites), e5a79fe (disponibilites) — tous poussés
+Prochaine session: Phase 1 partie applicative — inscription avocat (email only, upload documents bucket privé, statut en_attente) + profil public /marketplace/[avocatId] + paramètres cabinet.
 
 [Sessions suivantes ajoutées ici par l'agent]
