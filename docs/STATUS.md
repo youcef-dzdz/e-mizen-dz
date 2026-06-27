@@ -14,6 +14,7 @@ Résumé point (reprise): Auth Foundation 100% COMPLÈTE et vérifiée — signu
 ---
 
 ## Phase Courante
+**Phase 1 — Avocat Profile & Cabinet** · Statut: 🔵 DÉMARRÉE · Première livraison : table **cabinets** (migration 005 + RLS SELECT public / écriture service_role + tests négatifs RLS 4 ops vérifiés sur Supabase). Couche GRANT/REVOKE explicite (least privilege) ajoutée aux 4 tables (001/002/003/005) suite au changement de défaut Supabase (30 mai 2026). Prochaine : migration avocats (statut enum, n° Barreau, verifie_jusqu_a, cabinet_id FK).
 **Phase 0.3 — Auth Foundation** · Statut: ✅ TERMINÉE (100%) · Prochaine : Phase 1 (Avocat Profile & Cabinet).
 **Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~98% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation ✅ TERMINÉE — vérifiée E2E, password reset complet inclus)
 **Phase 0.2 ✅ complète:** migrations 001–003 + wilaya seed exécutés sur Supabase le 2026-06-24, vérifiés (wilaya=69, 59–69=11).
@@ -108,6 +109,7 @@ Aucun — projet non commencé.
 - [ ] **[Phase 0.3 / Phase 1 — Auth] Signup — orphelins :** un auth.users peut exister sans ligne public.users si le client ferme l'onglet entre auth.signUp() et l'appel à create-profile. À détecter au premier login + réparer. Faible criticité MVP.
 - [ ] **[Phase 0.3 — Auth] Détection "email déjà utilisé" non vérifiée :** SignupForm mappe error.status===422 / regex vers errors.emailTaken, MAIS Supabase masque par défaut les emails déjà inscrits (fake success, anti-énumération T08) — ce code peut ne jamais se déclencher. À tester explicitement et ajuster si besoin.
 - [ ] **[Phase 0.3 — Auth] Pas de libellé "chargement" signup :** bouton réutilise le label submit pendant isLoading (désactivé). Ajouter clé i18n auth.signup.submitting (3 locales) pour un retour visuel clair pendant l'appel réseau.
+- 🟢 **[Phase 1 — GRANT/REVOKE] REVOKE des privilèges non nécessaire — vérifié.** Le nouveau défaut Supabase ne grant plus SELECT/INSERT/UPDATE/DELETE par défaut (changement 30 mai 2026), donc aucun REVOKE préalable n'est requis. Le hardening REVOKE complet des rôles est déjà couvert par la couche GRANT explicite (least privilege) ajoutée aux 4 tables (001/002/003/005).
 - [ ] **[Passe sécurité avant déploiement] npm audit — 5 vulnérabilités (1 moderate, 4 high) :** signalées après install (probablement transitives, dans des sous-dépendances dev). NE PAS lancer `npm audit fix --force` (breaking changes, risque de casser un build qui marche). À auditer dans une passe sécurité dédiée avant déploiement (checklist SECURITY.md). Vérifier `npm audit` en détail à ce moment-là.
 
 ---
@@ -222,5 +224,12 @@ Date: 2026-06-26 · Phase: 0.3→1 transition
 Fait: catalogue specialites (20 spécialités juridiques algériennes + « autre » id=99) ajouté à seed.sql, exécuté sur Supabase, count=21 vérifié. Décision « avocat généraliste » = option B (select-all UI) — à implémenter Phase 1, PAS un row dans specialites.
 Build: N/A (SQL data) · Commit: 0f72f64 poussé
 Prochaine session: Phase 1 — table cabinets (migration + RLS + tests négatifs)
+
+### Session 009 (suite) — Table cabinets + couche GRANT/REVOKE
+Date: 2026-06-27 · Phase: 1 (Avocat Profile & Cabinet)
+Fait: migration 005_cabinets (tenant root, uuid PK, wilaya_id FK, soft delete, trigger updated_at réutilisé, RLS SELECT public + écriture service_role) + tests négatifs RLS vérifiés sur Supabase (4 ops, Success). GAP plateforme corrigé : Supabase ne grant plus par défaut (changement 30 mai 2026) → couche GRANT/REVOKE explicite (least privilege) ajoutée aux 4 tables (001 wilaya, 002 specialites, 003 users, 005 cabinets) + appliquée manuellement sur la base.
+Décisions: avocat↔cabinet = 1:1, FK dans avocats.cabinet_id · statut/Barreau/vérification = sur avocats (pas cabinets) · verifie_jus_qu_a = colonne schema-ready Phase avocats, logique périodique = Future Building · généraliste = option B (select-all UI).
+Build: N/A (SQL) · Commit: 7bf8c4e poussé
+Prochaine session: migration avocats (statut enum, numéro Barreau, verifie_jusqu_a, cabinet_id FK)
 
 [Sessions suivantes ajoutées ici par l'agent]
