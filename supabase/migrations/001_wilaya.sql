@@ -26,6 +26,17 @@ create table public.wilaya (
 create index idx_wilaya_code on public.wilaya (code);
 
 -- -----------------------------------------------------------------------------
+-- Couche GRANT/REVOKE explicite (least privilege).
+-- POURQUOI revoke d'abord : retire les privilèges hérités de PUBLIC
+--   (REFERENCES/TRIGGER/TRUNCATE) — surface minimale, explicite et auditable.
+-- POURQUOI grant ensuite : Supabase ne grant plus par défaut (30 mai 2026) ;
+--   sans grant explicite la table est injoignable via la Data API.
+-- POURQUOI service_role absent : il bypass RLS et les grants (rôle privilégié) — ne pas y toucher.
+-- -----------------------------------------------------------------------------
+revoke all on public.wilaya from anon, authenticated, public;
+grant select on public.wilaya to anon, authenticated;
+
+-- -----------------------------------------------------------------------------
 -- RLS : lecture publique, écriture interdite côté client
 -- -----------------------------------------------------------------------------
 alter table public.wilaya enable row level security;

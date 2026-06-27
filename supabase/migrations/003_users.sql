@@ -57,6 +57,18 @@ create trigger trg_users_updated_at
   execute function public.set_updated_at();
 
 -- -----------------------------------------------------------------------------
+-- Couche GRANT/REVOKE explicite (least privilege).
+-- POURQUOI revoke d'abord : retire les privilèges hérités de PUBLIC
+--   (REFERENCES/TRIGGER/TRUNCATE) — surface minimale, explicite et auditable.
+-- POURQUOI grant ensuite : Supabase ne grant plus par défaut (30 mai 2026) ;
+--   sans grant explicite la table est injoignable via la Data API.
+-- POURQUOI service_role absent : il bypass RLS et les grants (rôle privilégié) — ne pas y toucher.
+-- POURQUOI authenticated seul (pas anon) : un profil n'est jamais lu par un visiteur. RLS restreint déjà à sa propre ligne.
+-- -----------------------------------------------------------------------------
+revoke all on public.users from anon, authenticated, public;
+grant select, update on public.users to authenticated;
+
+-- -----------------------------------------------------------------------------
 -- RLS : un utilisateur ne voit/modifie QUE sa propre ligne
 -- -----------------------------------------------------------------------------
 alter table public.users enable row level security;
