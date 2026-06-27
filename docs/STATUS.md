@@ -15,7 +15,7 @@ Résumé point (reprise): Auth Foundation 100% COMPLÈTE et vérifiée — signu
 
 ## Phase Courante
 **Phase 1 — Avocat Profile & Cabinet** · Statut: 🔵 DÉMARRÉE · Première livraison : table **cabinets** (migration 005 + RLS SELECT public / écriture service_role + tests négatifs RLS 4 ops vérifiés sur Supabase). Couche GRANT/REVOKE explicite (least privilege) ajoutée aux 4 tables (001/002/003/005) suite au changement de défaut Supabase (30 mai 2026). Prochaine : migration avocats (statut enum, n° Barreau, verifie_jusqu_a, cabinet_id FK).
-**Phase 0.3 — Auth Foundation** · Statut: ✅ TERMINÉE (100%) · Prochaine : Phase 1 (Avocat Profile & Cabinet).
+**Phase 0.3 — Auth Foundation** · Statut: ✅ TERMINÉE (100%) · Finition UI auth faite (Session 009 suite) : AuthLayout partagé + LanguageSwitcher global + titres navigateur traduits + boutons affinés py-3 sur les 4 formulaires. Phase 0.3 close à 100 % sur **tous les niveaux** (logic + UI + i18n + RTL testés FR/AR). · Prochaine : Phase 1 (Avocat Profile & Cabinet).
 **Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~98% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation ✅ TERMINÉE — vérifiée E2E, password reset complet inclus)
 **Phase 0.2 ✅ complète:** migrations 001–003 + wilaya seed exécutés sur Supabase le 2026-06-24, vérifiés (wilaya=69, 59–69=11).
 **Phase 0.3 — Auth Foundation 🔵 en cours (Session 007):** pgvector activé (vector 0.8.0) · @supabase/ssr + next-intl v4 installés · src/lib/supabase/server-session.ts ajouté (client SSR cookie/session, anon, respecte RLS — server.ts service_role INCHANGÉ) · squelette i18n complet (routing.ts + request.ts + plugin next.config.mjs + stubs fr/ar/en common + restructure app/[locale] avec dir RTL + NextIntlClientProvider) · middleware fusionné src/middleware.ts (next-intl v4 + refresh session Supabase, un seul fichier, ordre correct) · **migration 004_handle_new_user.sql (trigger AFTER INSERT auth.users → profil public.users auto-créé, role=citoyen forcé) exécutée + testée · formulaire signup UI + validation client (tokens uidesign, FR/AR RTL vérifiés)**. Prochaine immédiate: câbler SignupForm sur auth.ts signUp() (le trigger gère le profil — PAS d'appel à create-profile). **Mise à jour (Session 007 suite): SignupForm câblé sur signUp() et flux signup vérifié de bout en bout en réel (page → auth.users → trigger 004 → public.users role=citoyen → email confirmé). Prochaine immédiate: route /auth/callback (handler confirmation/OAuth) puis page login.**
@@ -231,5 +231,11 @@ Fait: migration 005_cabinets (tenant root, uuid PK, wilaya_id FK, soft delete, t
 Décisions: avocat↔cabinet = 1:1, FK dans avocats.cabinet_id · statut/Barreau/vérification = sur avocats (pas cabinets) · verifie_jus_qu_a = colonne schema-ready Phase avocats, logique périodique = Future Building · généraliste = option B (select-all UI).
 Build: N/A (SQL) · Commit: 7bf8c4e poussé
 Prochaine session: migration avocats (statut enum, numéro Barreau, verifie_jusqu_a, cabinet_id FK)
+
+### Session 009 (suite) — Finition UI pages auth
+Date: 2026-06-27 · Phase: 0.3 (clôture définitive UI) → 1
+Fait: AuthLayout partagé (logo + wordmark "E-Mizen DZ" DZ en or + tagline traduite) · LanguageSwitcher global (FR·AR·EN, RTL-safe, helpers createNavigation dans routing.ts) · titres navigateur traduits par locale (generateMetadata + getTranslations) · espacements resserrés + bouton affiné (py-3) sur les 4 formulaires · clé common.tagline + 4 clés auth.*.pageTitle (3 locales lockstep). Testé visuellement les 4 pages × FR/AR, RTL arabe vérifié propre (labels à droite, œil à gauche, miroir auto via classes logiques).
+Build: 0 erreur · Commit: 3a80718 poussé
+Prochaine session: Phase 1 — migration avocats (statut enum, n° Barreau, verifie_jusqu_a, cabinet_id FK)
 
 [Sessions suivantes ajoutées ici par l'agent]
