@@ -6,15 +6,16 @@
 ---
 
 ## Dernière Session
-Date: 2026-06-26 (Session 008 — suite)
-Ce qui a été fait: Flow password reset COMPLET et vérifié E2E. Construit : page forgot-password + resetPasswordForEmail (anti-enumeration), callback gère type=recovery → redirige vers reset-password, page reset-password + updatePassword, lien "mot de passe oublié" sur login. Testé en réel : forgot → email Supabase → lien → callback (échange code recovery) → reset-password → nouveau mot de passe → login avec le nouveau mot de passe ✅. Note : lien reset à usage unique (un clic) — un lien déjà cliqué donne auth_error=1, comportement normal de sécurité.
-Prochaine tâche: clôturer Phase 0.3, passer à Phase 1 (Avocat Profile & Cabinet)
-Résumé point (reprise): Auth Foundation 100% COMPLÈTE et vérifiée — signup, login, session, confirmation, callback PKCE, password reset complet. Reste optionnel non construit (Future Building) : resend confirmation, MFA, social login, remember-me. Prêt pour Phase 1.
+Date: 2026-06-28 (Session 011)
+Ce qui a été fait: migration 009_register_avocat construite, testée, poussée (commit 65a2a49). Contenu : (a) fonction slugify (normalisation accents FR, sans extension unaccent) ; (b) fonction register_avocat (uuid, nom, prenom, telephone, wilaya_id, cabinet_nom) → json, SECURITY DEFINER, search_path figé, atomique : crée cabinet (slug déterministe slugify-uuid8) + UPDATE users role='avocat' + INSERT avocats statut='en_attente', EXECUTE révoqué sauf service_role ; (c) trigger garde-fou trg_guard_user_role (BEFORE UPDATE users) bloquant tout changement de role par authenticated/anon. Tests négatifs (tests/rls/register_avocat.test.sql) : TEST 2 execute refusé à authenticated ✅, TEST 3 happy path inscription atomique ✅, TEST 4 double-inscription bloquée ✅. Convention alignée sur les anciens tests (exception ECHEC = rouge). Fichier self-cleaning (nettoyage initial + final).
+Prochaine tâche: route API /api/auth/register-avocat (pont signUp() → register_avocat()), puis UI inscription avocat, puis upload documents vérification.
+Résumé point (reprise): Backbone serveur inscription avocat COMPLET et testé. register_avocat appelable uniquement par service_role. Reste Phase 1 applicative : route API + UI + upload documents.
 
 ---
 
 ## Phase Courante
 **Phase 1 — Avocat Profile & Cabinet** · Statut: 🔵 DÉMARRÉE · **SCHÉMA Phase 1 COMPLET (Session 010)** : les 4 tables migrées + RLS + tests négatifs vérifiés sur Supabase — 005_cabinets, 006_avocats (enum avocat_statut, RLS T03 stricte + anti-auto-vérification), 007_avocat_specialites (jointure N:N, PK composite), 008_disponibilites (récurrent hebdo, 2 CHECK, soft delete). Couche GRANT/REVOKE explicite (least privilege) appliquée suite au changement de défaut Supabase (30 mai 2026). ⚠️ **Phase 1 PAS terminée — seule sa fondation données est posée.** La partie applicative + UI reste à faire : inscription avocat (email only, upload documents bucket privé, statut en_attente), profil public /marketplace/[avocatId], paramètres cabinet.
+**Backbone serveur inscription (migration 009) FAIT et testé (Session 011)** : slugify + register_avocat (atomique, SECURITY DEFINER, service_role-only) + trigger garde-fou role. Reste applicatif Phase 1 : route API register-avocat, UI inscription, upload documents, profil public, paramètres cabinet.
 **Phase 0.3 — Auth Foundation** · Statut: ✅ TERMINÉE (100%) · Finition UI auth faite (Session 009 suite) : AuthLayout partagé + LanguageSwitcher global + titres navigateur traduits + boutons affinés py-3 sur les 4 formulaires. Phase 0.3 close à 100 % sur **tous les niveaux** (logic + UI + i18n + RTL testés FR/AR). · Prochaine : Phase 1 (Avocat Profile & Cabinet).
 **Phase 0 — Foundation & Setup** · Statut: 🔵 En cours · Progression: ~98% (0.1 scaffolding + 0.2 ✅ complète + 0.3 Auth Foundation ✅ TERMINÉE — vérifiée E2E, password reset complet inclus)
 **Phase 0.2 ✅ complète:** migrations 001–003 + wilaya seed exécutés sur Supabase le 2026-06-24, vérifiés (wilaya=69, 59–69=11).
@@ -112,6 +113,9 @@ Aucun — projet non commencé.
 - 🟢 **[Phase 1 — GRANT/REVOKE] REVOKE des privilèges non nécessaire — vérifié.** Le nouveau défaut Supabase ne grant plus SELECT/INSERT/UPDATE/DELETE par défaut (changement 30 mai 2026), donc aucun REVOKE préalable n'est requis. Le hardening REVOKE complet des rôles est déjà couvert par la couche GRANT explicite (least privilege) ajoutée aux 4 tables (001/002/003/005).
 - [ ] **[Phase 1 — barreau]** La colonne avocats.barreau est en texte libre. À normaliser en table de référence (FK) quand la liste officielle UNOA des barreaux algériens sera obtenue. Texte temporaire = dette consciente, pas oubli.
 - [ ] **[Passe sécurité avant déploiement] npm audit — 5 vulnérabilités (1 moderate, 4 high) :** signalées après install (probablement transitives, dans des sous-dépendances dev). NE PAS lancer `npm audit fix --force` (breaking changes, risque de casser un build qui marche). À auditer dans une passe sécurité dédiée avant déploiement (checklist SECURITY.md). Vérifier `npm audit` en détail à ce moment-là.
+- [ ] **[Phase 7 — QA] Garde-fou trg_guard_user_role (verrou role, migration 009) :** actif en base comme défense en profondeur, mais sa validation négative (un authenticated ne peut pas changer son role) n'a PAS pu être testée de façon concluante dans le SQL Editor (set local role ne reproduit pas fidèlement le contexte de rôle d'une session app). À valider en E2E via l'app en Phase 7.
+- [ ] **[Phase 1 / MVP] Compte de test register_avocat = UUID fixe 22349d59-75a3-4bbb-accc-8ff240747796** (créé manuellement via Dashboard Auth). Acceptable MVP ; en entreprise réelle, seed de test automatisé via l'API Auth en CI (post-graduation).
+- [ ] **[Leçon outil] Supabase SQL Editor :** avec une sélection active, le bouton devient « Run selected » et n'exécute QUE la portion surlignée → les fixtures/nettoyage en tête de fichier sont sautés. Toujours Ctrl+A (ou désélectionner) avant Run pour exécuter le fichier entier.
 
 ---
 
@@ -244,5 +248,11 @@ Date: 2026-06-27 · Phase: 1 (Avocat Profile & Cabinet)
 Fait: les 4 tables du schéma Phase 1 migrées + RLS + tests négatifs vérifiés sur Supabase : 005_cabinets, 006_avocats (enum avocat_statut 4 valeurs, RLS T03 stricte : public voit verifie only + owner voit sa ligne, anti-auto-vérification testée), 007_avocat_specialites (jointure N:N, PK composite, hard delete justifié), 008_disponibilites (récurrent hebdo ISO 8601, 2 CHECK, soft delete). Décisions clés : avocat.id = PK partagée users.id (extension 1:1) · barreau = texte (dette : normaliser en table UNOA plus tard) · pratique_generale booléen (option C) · tests idempotents via ON CONFLICT (leçon : begin/rollback non fiable dans SQL Editor + auth.users non nettoyable).
 Commits: 7bf8c4e (cabinets), 538b4f6 (avocats), 7c6349f (avocat_specialites), e5a79fe (disponibilites) — tous poussés
 Prochaine session: Phase 1 partie applicative — inscription avocat (email only, upload documents bucket privé, statut en_attente) + profil public /marketplace/[avocatId] + paramètres cabinet.
+
+### Session 011 — Backbone serveur inscription avocat (migration 009)
+Date: 2026-06-28 · Phase: 1 (Avocat Profile & Cabinet)
+Fait: migration 009 (slugify + register_avocat atomique SECURITY DEFINER service_role-only + trigger garde-fou role) construite, testée Supabase, poussée. Tests négatifs TEST 2/3/4 ✅ (execute refusé, happy path, double-inscription bloquée). Fichier de test self-cleaning.
+Décisions: garde-fou role validé en Phase 7 (SQL Editor non fiable pour le contexte de rôle) · compte test UUID fixe via Dashboard Auth · TEST 1 retiré du fichier (non concluant dans l'éditeur), trigger gardé en base.
+Commit: 65a2a49 poussé · Prochaine session: route API /api/auth/register-avocat (signUp → register_avocat)
 
 [Sessions suivantes ajoutées ici par l'agent]
