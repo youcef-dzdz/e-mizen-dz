@@ -50,5 +50,11 @@
       "emailNotConfirmed": "Veuillez confirmer votre email avant de vous connecter.",
       "resetLinkInvalid": "Le lien de réinitialisation est invalide ou a expiré. Veuillez en demander un nouveau."
     }
+  },
+  "wilaya": {
+    "label": "Wilaya",
+    "placeholder": "Sélectionnez une wilaya",
+    "loading": "Chargement des wilayas...",
+    "loadError": "Impossible de charger les wilayas. Réessayez."
   }
 }

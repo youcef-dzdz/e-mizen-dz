@@ -50,5 +50,11 @@
       "emailNotConfirmed": "Please confirm your email before signing in.",
       "resetLinkInvalid": "The reset link is invalid or has expired. Please request a new one."
     }
+  },
+  "wilaya": {
+    "label": "Wilaya",
+    "placeholder": "Select a wilaya",
+    "loading": "Loading wilayas...",
+    "loadError": "Could not load wilayas. Please try again."
   }
 }
