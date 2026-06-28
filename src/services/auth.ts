@@ -22,7 +22,26 @@ export async function signOut() {
 // La ligne dans la table users (role='citoyen' forcé) est créée séparément par une
 // route serveur (service_role) — JAMAIS ici (Rule 11). Confirmation email
 // obligatoire avant premier login (déjà activé côté Supabase).
-export async function signUp(email: string, password: string, locale: string) {
+//
+// POURQUOI le 4e paramètre metadata OPTIONNEL : c'est le SEUL point de création de
+// compte de l'app. L'inscription avocat doit transmettre son intention + ses données
+// descriptives (intent='avocat', nom, prenom, telephone, wilaya_id, cabinet_nom) à
+// Supabase Auth ; Supabase les range dans auth.users.raw_user_meta_data, que le trigger
+// 011 lit pour créer la ligne pending_avocat_registrations côté serveur. On évite ainsi
+// un second point de création de compte.
+// POURQUOI metadata est OPTIONNEL et placé en dernier : rétrocompatibilité totale — le
+// SignupForm citoyen appelle toujours signUp(email, password, locale) à 3 arguments,
+// metadata reste undefined, options.data n'est pas envoyé, comportement strictement
+// inchangé pour le citoyen.
+// SÉCURITÉ : role n'est JAMAIS passé dans metadata (il est forcé côté serveur, T01/T03) ;
+// uniquement des données descriptives non sensibles. Le client est contrôlé par
+// l'attaquant — le serveur ne fait jamais confiance à ces métadonnées pour un privilège.
+export async function signUp(
+  email: string,
+  password: string,
+  locale: string,
+  metadata?: Record<string, unknown>,
+) {
   return supabaseBrowser.auth.signUp({
     email,
     password,
@@ -33,6 +52,10 @@ export async function signUp(email: string, password: string, locale: string) {
       // POURQUOI window.location.origin : l'URL doit être absolue ET correspondre à
       // l'origine réelle (localhost en dev, domaine en prod) — pas de valeur en dur.
       emailRedirectTo: `${window.location.origin}/${locale}/auth/callback`,
+      // POURQUOI options.data = metadata : ces clés atterrissent dans raw_user_meta_data,
+      // lues par le trigger 011. Si metadata est undefined (cas citoyen), data l'est aussi
+      // → Supabase n'écrit aucune métadonnée, rétrocompatible.
+      data: metadata,
     },
   })
 }
