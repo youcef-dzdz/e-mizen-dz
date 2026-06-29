@@ -15,6 +15,21 @@
       "submit": "S'inscrire",
       "success": "Compte créé. Vérifiez votre email pour confirmer."
     },
+    "signupAvocat": {
+      "pageTitle": "Inscription Avocat — E-Mizen DZ",
+      "title": "Inscription avocat",
+      "emailLabel": "Email",
+      "passwordLabel": "Mot de passe",
+      "confirmPasswordLabel": "Confirmer le mot de passe",
+      "nomLabel": "Nom",
+      "prenomLabel": "Prénom",
+      "telephoneLabel": "Téléphone (optionnel)",
+      "cabinetNomLabel": "Nom du cabinet",
+      "submit": "S'inscrire comme avocat",
+      "success": "Compte créé. Vérifiez votre email pour confirmer votre inscription.",
+      "showPassword": "Afficher le mot de passe",
+      "hidePassword": "Masquer le mot de passe"
+    },
     "signin": {
       "pageTitle": "Connexion — E-Mizen DZ",
       "title": "Se connecter",
@@ -44,6 +59,11 @@
       "emailInvalid": "Adresse email invalide",
       "passwordWeak": "Mot de passe trop faible (min 8 caractères, 1 majuscule, 1 chiffre)",
       "passwordMismatch": "Les mots de passe ne correspondent pas",
+      "nomInvalid": "Nom invalide (2 à 100 caractères, lettres uniquement)",
+      "prenomInvalid": "Prénom invalide (2 à 100 caractères, lettres uniquement)",
+      "telephoneInvalid": "Numéro invalide (format algérien : +213XXXXXXXXX ou 0XXXXXXXXX)",
+      "wilayaRequired": "Veuillez sélectionner une wilaya",
+      "cabinetNomInvalid": "Nom du cabinet invalide (2 à 100 caractères)",
       "generic": "Une erreur est survenue. Réessayez.",
       "emailTaken": "Cet email est déjà utilisé.",
       "invalidCredentials": "Email ou mot de passe incorrect",

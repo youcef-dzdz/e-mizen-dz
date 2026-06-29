@@ -15,6 +15,21 @@
       "submit": "Sign up",
       "success": "Account created. Check your email to confirm."
     },
+    "signupAvocat": {
+      "pageTitle": "Lawyer registration — E-Mizen DZ",
+      "title": "Lawyer registration",
+      "emailLabel": "Email",
+      "passwordLabel": "Password",
+      "confirmPasswordLabel": "Confirm password",
+      "nomLabel": "Last name",
+      "prenomLabel": "First name",
+      "telephoneLabel": "Phone (optional)",
+      "cabinetNomLabel": "Cabinet name",
+      "submit": "Register as a lawyer",
+      "success": "Account created. Check your email to confirm your registration.",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    },
     "signin": {
       "pageTitle": "Sign in — E-Mizen DZ",
       "title": "Sign in",
@@ -44,6 +59,11 @@
       "emailInvalid": "Invalid email address",
       "passwordWeak": "Password too weak (min 8 chars, 1 uppercase, 1 number)",
       "passwordMismatch": "Passwords do not match",
+      "nomInvalid": "Invalid name (2 to 100 characters, letters only)",
+      "prenomInvalid": "Invalid first name (2 to 100 characters, letters only)",
+      "telephoneInvalid": "Invalid number (Algerian format: +213XXXXXXXXX or 0XXXXXXXXX)",
+      "wilayaRequired": "Please select a wilaya",
+      "cabinetNomInvalid": "Invalid cabinet name (2 to 100 characters)",
       "generic": "Something went wrong. Try again.",
       "emailTaken": "This email is already in use.",
       "invalidCredentials": "Incorrect email or password",
