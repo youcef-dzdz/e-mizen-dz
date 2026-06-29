@@ -10,8 +10,13 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
 
   return (
     <main className="min-h-screen bg-creme flex flex-col items-center justify-center p-4">
-      {/* Bloc vertical centré : logo → wordmark → tagline → formulaire. */}
-      <div className="flex flex-col items-center">
+      {/* Bloc vertical centré : logo → wordmark → tagline → formulaire.
+          POURQUOI w-full max-w-md : impose une largeur stable dès le rendu initial — sans
+          elle, le conteneur se rétrécit à son contenu (shrink-to-fit) et le formulaire
+          n'atteint sa pleine largeur qu'une fois du texte saisi. Le centrage horizontal
+          reste assuré par le items-center du <main> parent. */}
+      <div className="flex flex-col items-center w-full max-w-md">
+
         {/*
           width/height = dimensions réelles du fichier (518×713) : next/image
           les exige pour réserver l'espace et éviter le layout shift (saut de
